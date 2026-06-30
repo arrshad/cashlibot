@@ -1,0 +1,49 @@
+{
+  "common.continue": "Continue",
+  "common.back": "Back",
+  "common.skip": "Skip",
+  "common.loading": "Loading…",
+  "common.retry": "Try again",
+
+  "auth.outside_telegram": "Open this from inside Telegram to continue.",
+  "auth.failed": "Couldn't verify your Telegram session. Try reopening from the chat.",
+
+  "onboarding.language.title": "Pick a language",
+  "onboarding.language.subtitle": "You can change this later in settings.",
+
+  "onboarding.calendar.title": "Which calendar do you use?",
+  "onboarding.calendar.subtitle": "Dates will be shown in this calendar.",
+  "onboarding.calendar.gregorian": "Gregorian",
+  "onboarding.calendar.jalali": "Jalali / Shamsi",
+  "onboarding.calendar.hijri": "Hijri",
+
+  "onboarding.timezone.title": "Where are you?",
+  "onboarding.timezone.subtitle": "Pick the closest, or type your own.",
+  "onboarding.timezone.custom_placeholder": "e.g. Asia/Tehran",
+  "onboarding.timezone.invalid": "That doesn't look like a valid timezone.",
+  "onboarding.timezone.other": "Other…",
+
+  "onboarding.currency.title": "Default currency",
+  "onboarding.currency.subtitle": "The one you mostly deal with.",
+
+  "onboarding.account.title": "Your first account",
+  "onboarding.account.name_label": "Name",
+  "onboarding.account.name_placeholder": "Wallet, Debit card, …",
+  "onboarding.account.type_label": "Type",
+  "onboarding.account.currency_label": "Currency",
+  "onboarding.account.type.cash": "Cash",
+  "onboarding.account.type.card": "Card",
+  "onboarding.account.type.bank": "Bank",
+  "onboarding.account.type.e_wallet": "E-wallet",
+  "onboarding.account.type.credit": "Credit",
+  "onboarding.account.type.investment": "Investment",
+  "onboarding.account.type.savings": "Savings",
+  "onboarding.account.submit": "Finish setup",
+
+  "onboarding.done.title": "All set",
+  "onboarding.done.subtitle": "I added {credits} signup credits to get you started. Close this and chat with the bot.",
+  "onboarding.done.close": "Close",
+
+  "dashboard.placeholder.title": "You're all set up",
+  "dashboard.placeholder.body": "The dashboard isn't built yet. For now, talk to the bot — try saying something like \"paid 25 for lunch\"."
+}

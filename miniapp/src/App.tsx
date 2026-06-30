@@ -1,15 +1,27 @@
+import { useEffect } from 'react';
+import { Dashboard } from '@/pages/Dashboard';
+import { ErrorView } from '@/pages/ErrorView';
+import { Loading } from '@/pages/Loading';
+import { Onboarding } from '@/pages/onboarding';
+import { Outside } from '@/pages/Outside';
+import { useAppStore } from '@/store/app';
+import { getInitDataRaw, notifyReady } from '@/telegram';
+
 export default function App() {
-  return (
-    <main className="container">
-      <h1>Cashlibot</h1>
-      <p className="subtitle">Mini App scaffold — screens coming soon.</p>
-      <div className="card">
-        <p>
-          When you open this from inside Telegram, the Mini App SDK will be wired
-          to your account. For now, this is just a placeholder so the build
-          pipeline is in place.
-        </p>
-      </div>
-    </main>
-  );
+  const { me, config, loading, error, load } = useAppStore();
+  const initData = getInitDataRaw();
+
+  useEffect(() => {
+    notifyReady();
+    if (initData) {
+      load();
+    }
+  }, [initData, load]);
+
+  if (!initData) return <Outside />;
+  if (loading) return <Loading />;
+  if (error) return <ErrorView message={error} onRetry={load} />;
+  if (!me || !config) return <Loading />;
+  if (!me.onboarding_completed) return <Onboarding />;
+  return <Dashboard />;
 }
