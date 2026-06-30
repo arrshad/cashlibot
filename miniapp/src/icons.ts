@@ -1,0 +1,88 @@
+/**
+ * Maps the icon-name strings used throughout the app (e.g. "fa-wallet",
+ * stored on Account / Category rows) to Font Awesome icon definitions.
+ *
+ * Add new entries here when introducing new icons. We import individual icons
+ * (not the whole library) so the bundle stays slim.
+ */
+
+import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import {
+  faArrowLeft,
+  faBagShopping,
+  faBriefcase,
+  faBuildingColumns,
+  faCar,
+  faCartShopping,
+  faChartLine,
+  faCheck,
+  faCircleMinus,
+  faCirclePlus,
+  faCreditCard,
+  faFileInvoiceDollar,
+  faFilm,
+  faGift,
+  faGraduationCap,
+  faHandHoldingHeart,
+  faHeartPulse,
+  faHouse,
+  faLaptopCode,
+  faMobileScreen,
+  faMoneyBillWave,
+  faPen,
+  faPiggyBank,
+  faPlane,
+  faPlus,
+  faRepeat,
+  faSpa,
+  faTag,
+  faTrashCan,
+  faUtensils,
+  faWallet,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
+
+const REGISTRY: Record<string, IconDefinition> = {
+  // Account types
+  'fa-wallet': faWallet,
+  'fa-credit-card': faCreditCard,
+  'fa-building-columns': faBuildingColumns,
+  'fa-mobile-screen': faMobileScreen,
+  'fa-chart-line': faChartLine,
+  'fa-piggy-bank': faPiggyBank,
+  'fa-money-bill-wave': faMoneyBillWave,
+
+  // Categories
+  'fa-tag': faTag,
+  'fa-utensils': faUtensils,
+  'fa-cart-shopping': faCartShopping,
+  'fa-car': faCar,
+  'fa-house': faHouse,
+  'fa-file-invoice-dollar': faFileInvoiceDollar,
+  'fa-heart-pulse': faHeartPulse,
+  'fa-bag-shopping': faBagShopping,
+  'fa-film': faFilm,
+  'fa-graduation-cap': faGraduationCap,
+  'fa-plane': faPlane,
+  'fa-repeat': faRepeat,
+  'fa-spa': faSpa,
+  'fa-hand-holding-heart': faHandHoldingHeart,
+  'fa-circle-minus': faCircleMinus,
+  'fa-circle-plus': faCirclePlus,
+  'fa-briefcase': faBriefcase,
+  'fa-laptop-code': faLaptopCode,
+  'fa-gift': faGift,
+
+  // UI affordances
+  'fa-plus': faPlus,
+  'fa-pen': faPen,
+  'fa-trash-can': faTrashCan,
+  'fa-arrow-left': faArrowLeft,
+  'fa-check': faCheck,
+  'fa-xmark': faXmark,
+};
+
+export function resolveIcon(name: string | null | undefined): IconDefinition {
+  if (!name) return faTag;
+  return REGISTRY[name] ?? faTag;
+}

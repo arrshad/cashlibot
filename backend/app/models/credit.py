@@ -6,7 +6,9 @@ import uuid
 from datetime import UTC, datetime
 from enum import Enum
 
-from sqlalchemy import BigInteger, Column, ForeignKey
+import sqlalchemy as sa
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey
+from sqlalchemy import Enum as SAEnum
 from sqlmodel import Field, SQLModel
 
 
@@ -35,11 +37,26 @@ class CreditTransaction(SQLModel, table=True):
     )
     change_amount: int                 # positive = credit added, negative = used
     balance_after: int
-    reason: CreditReason
+    reason: CreditReason = Field(
+        sa_column=Column(
+            SAEnum(
+                CreditReason,
+                native_enum=False,
+                length=32,
+                values_callable=lambda cls: [e.value for e in cls],
+            ),
+            nullable=False,
+        ),
+    )
     reference_id: str | None = Field(default=None)
     # AI-specific bookkeeping; only set when reason == AI_USAGE.
     ai_tokens_used: int | None = Field(default=None)
     ai_provider: str | None = Field(default=None)
     ai_model: str | None = Field(default=None)
     cost_usd: float | None = Field(default=None)
-    created_at: datetime = Field(default_factory=_utcnow)
+    created_at: datetime = Field(
+        default_factory=_utcnow,
+        sa_column=Column(
+            DateTime(timezone=True), nullable=False, server_default=sa.func.now()
+        ),
+    )

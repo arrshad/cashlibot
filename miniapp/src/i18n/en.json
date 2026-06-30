@@ -44,6 +44,13 @@
   "onboarding.done.subtitle": "I added {credits} signup credits to get you started. Close this and chat with the bot.",
   "onboarding.done.close": "Close",
 
-  "dashboard.placeholder.title": "You're all set up",
-  "dashboard.placeholder.body": "The dashboard isn't built yet. For now, talk to the bot — try saying something like \"paid 25 for lunch\"."
+  "dashboard.greeting.eyebrow": "Hey,",
+  "dashboard.totals.empty": "No balances yet — start logging transactions in the chat.",
+  "dashboard.accounts.title": "Accounts",
+  "dashboard.accounts.add": "Add",
+  "dashboard.accounts.empty": "You don't have any accounts yet. Add one to get started.",
+  "dashboard.account.default_chip": "Default",
+  "dashboard.transactions.hint": "Transactions show up here once you add them through the chat. AI input is coming.",
+  "dashboard.add_account.title": "New account",
+  "dashboard.add_account.submit": "Create"
 }
