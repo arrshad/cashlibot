@@ -1,0 +1,19 @@
+credits:
+  signup_bonus: 50
+  referral_bonus: 20
+  friend_add_bonus: 10
+  stars_to_credits_rate: 1
+  ai_agent_call_cost: 5
+  ai_memory_cost: 1
+  ai_report_insight_cost: 3
+
+bot:
+  max_inline_choices: 3
+  conversation_history_max: 10
+
+gamification:
+  xp_per_transaction: 5
+  xp_per_budget_kept: 20
+  xp_per_streak_day: 10
+  xp_per_goal_reached: 100
+  level_xp_base: 100

@@ -1,0 +1,15 @@
+start:
+  welcome: |
+    👋 Welcome to Cashlibot, {name}!
+
+    I'm your personal finance assistant. You can talk to me in plain English (or Persian) —
+    I'll help you track money across accounts, set budgets, save toward goals,
+    split expenses with friends, and more.
+
+    The full experience isn't built yet — this is an early scaffold. Stay tuned.
+
+common:
+  cancel: "Cancel"
+  back: "Back"
+  next: "Next"
+  done: "Done"

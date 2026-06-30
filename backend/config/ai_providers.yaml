@@ -1,0 +1,31 @@
+active_provider: "deepseek"
+
+providers:
+  deepseek:
+    type: "openai_compatible"
+    base_url: "https://api.deepseek.com"
+    model: "deepseek-chat"
+    api_key_env: "DEEPSEEK_API_KEY"
+    max_tokens: 2048
+    temperature: 0.1
+
+  openai:
+    type: "openai"
+    model: "gpt-4o"
+    api_key_env: "OPENAI_API_KEY"
+    max_tokens: 2048
+    temperature: 0.1
+
+  anthropic:
+    type: "anthropic"
+    model: "claude-sonnet-4-6"
+    api_key_env: "ANTHROPIC_API_KEY"
+    max_tokens: 2048
+    temperature: 0.1
+
+  ollama:
+    type: "ollama"
+    base_url: "http://host.docker.internal:11434"
+    model: "llama3.1"
+    max_tokens: 2048
+    temperature: 0.1

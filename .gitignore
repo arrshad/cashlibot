@@ -216,3 +216,23 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ----- Project additions -----
+
+# Node / frontends
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+
+# Local data volumes
+.docker-data/
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
