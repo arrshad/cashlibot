@@ -1,15 +1,20 @@
 start:
-  welcome: |
-    👋 Welcome to Cashlibot, {name}!
+  welcome_new: |
+    Hey {name}. I'm Cashlibot — your personal finance helper.
 
-    I'm your personal finance assistant. You can talk to me in plain English (or Persian) —
-    I'll help you track money across accounts, set budgets, save toward goals,
-    split expenses with friends, and more.
-
-    The full experience isn't built yet — this is an early scaffold. Stay tuned.
+    First things first: tap the button below to open the app and get set up. It takes a minute.
+  welcome_unfinished: |
+    Hey {name}, we didn't finish setting things up last time. Open the app to pick up where we left off.
+  welcome_back: |
+    Hey {name}, welcome back. Just talk to me — try something like "paid 25 for lunch" and I'll log it.
+  miniapp_not_configured: |
+    The Mini App URL isn't set yet, so I can't open the setup screen for you. Ask the admin to set MINIAPP_URL in the bot config.
 
 common:
+  open_app: "Open the app"
+  setup: "Set up"
   cancel: "Cancel"
   back: "Back"
   next: "Next"
+  skip: "Skip"
   done: "Done"

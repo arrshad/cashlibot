@@ -1,0 +1,49 @@
+{
+  "common.continue": "ادامه",
+  "common.back": "قبلی",
+  "common.skip": "بعداً",
+  "common.loading": "در حال بارگذاری…",
+  "common.retry": "دوباره امتحان کن",
+
+  "auth.outside_telegram": "این صفحه رو از داخل تلگرام باز کن.",
+  "auth.failed": "نتونستم سشن تلگرامت رو تأیید کنم. از چت بازش کن.",
+
+  "onboarding.language.title": "یه زبون انتخاب کن",
+  "onboarding.language.subtitle": "بعداً تو تنظیمات می‌تونی عوضش کنی.",
+
+  "onboarding.calendar.title": "از کدوم تقویم استفاده می‌کنی؟",
+  "onboarding.calendar.subtitle": "تاریخ‌ها رو همینجوری نشونت می‌دم.",
+  "onboarding.calendar.gregorian": "میلادی",
+  "onboarding.calendar.jalali": "شمسی",
+  "onboarding.calendar.hijri": "قمری",
+
+  "onboarding.timezone.title": "کجای دنیایی؟",
+  "onboarding.timezone.subtitle": "نزدیک‌ترین رو انتخاب کن یا خودت بنویس.",
+  "onboarding.timezone.custom_placeholder": "مثلا Asia/Tehran",
+  "onboarding.timezone.invalid": "این منطقه‌ی زمانی درست نیست.",
+  "onboarding.timezone.other": "بقیه…",
+
+  "onboarding.currency.title": "پول پیش‌فرض",
+  "onboarding.currency.subtitle": "اونی که بیشتر باهاش کار می‌کنی.",
+
+  "onboarding.account.title": "اولین حسابت",
+  "onboarding.account.name_label": "اسم",
+  "onboarding.account.name_placeholder": "کیف پول، کارت بانک، …",
+  "onboarding.account.type_label": "نوع",
+  "onboarding.account.currency_label": "ارز",
+  "onboarding.account.type.cash": "نقد",
+  "onboarding.account.type.card": "کارت",
+  "onboarding.account.type.bank": "بانک",
+  "onboarding.account.type.e_wallet": "کیف پول دیجیتال",
+  "onboarding.account.type.credit": "اعتباری",
+  "onboarding.account.type.investment": "سرمایه‌گذاری",
+  "onboarding.account.type.savings": "پس‌انداز",
+  "onboarding.account.submit": "تموم کن",
+
+  "onboarding.done.title": "تموم شد",
+  "onboarding.done.subtitle": "{credits} تا اعتبار اولیه گذاشتم برات. این صفحه رو ببند و بیا تو چت ربات حرف بزنیم.",
+  "onboarding.done.close": "بستن",
+
+  "dashboard.placeholder.title": "آماده‌ست",
+  "dashboard.placeholder.body": "داشبورد هنوز ساخته نشده. فعلاً تو چت با ربات حرف بزن — مثلا بگو «۲۵ برای ناهار دادم»."
+}
