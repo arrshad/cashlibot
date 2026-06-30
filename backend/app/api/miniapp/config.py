@@ -30,6 +30,10 @@ class CurrencyOption(BaseModel):
     code: str
     name: str
     symbol: str
+    symbol_position: str
+    decimal_places: int
+    decimal_separator: str
+    thousands_separator: str
     is_crypto: bool
 
 
@@ -70,6 +74,10 @@ async def get_config() -> ConfigOut:
                 code=c.code,
                 name=c.name,
                 symbol=c.symbol,
+                symbol_position=c.symbol_position,
+                decimal_places=c.decimal_places,
+                decimal_separator=c.decimal_separator,
+                thousands_separator=c.thousands_separator,
                 is_crypto=c.is_crypto,
             )
             for c in ctx.currencies.enabled()

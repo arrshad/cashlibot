@@ -1,7 +1,11 @@
 import axios from 'axios';
 import { getInitDataRaw } from '@/telegram';
 import type {
+  Account,
+  AccountCreatePayload,
+  AccountPatchPayload,
   AppConfig,
+  DashboardSummary,
   Me,
   OnboardingPayload,
   OnboardingResult,
@@ -42,5 +46,32 @@ export async function completeOnboarding(
     '/api/onboarding/complete',
     payload,
   );
+  return data;
+}
+
+export async function fetchAccounts(): Promise<Account[]> {
+  const { data } = await http.get<Account[]>('/api/accounts');
+  return data;
+}
+
+export async function createAccount(payload: AccountCreatePayload): Promise<Account> {
+  const { data } = await http.post<Account>('/api/accounts', payload);
+  return data;
+}
+
+export async function updateAccount(
+  id: string,
+  payload: AccountPatchPayload,
+): Promise<Account> {
+  const { data } = await http.patch<Account>(`/api/accounts/${id}`, payload);
+  return data;
+}
+
+export async function archiveAccount(id: string): Promise<void> {
+  await http.delete(`/api/accounts/${id}`);
+}
+
+export async function fetchDashboardSummary(): Promise<DashboardSummary> {
+  const { data } = await http.get<DashboardSummary>('/api/dashboard/summary');
   return data;
 }

@@ -6,6 +6,7 @@ import uuid
 from enum import Enum
 
 from sqlalchemy import BigInteger, Column, ForeignKey
+from sqlalchemy import Enum as SAEnum
 from sqlmodel import Field, SQLModel
 
 
@@ -31,7 +32,17 @@ class Category(SQLModel, table=True):
     name: str                         # what the user sees in their locale
     name_en: str                      # canonical English name (used by the AI for matching)
     name_fa: str | None = Field(default=None)
-    type: CategoryType
+    type: CategoryType = Field(
+        sa_column=Column(
+            SAEnum(
+                CategoryType,
+                native_enum=False,
+                length=16,
+                values_callable=lambda cls: [e.value for e in cls],
+            ),
+            nullable=False,
+        ),
+    )
     parent_id: uuid.UUID | None = Field(
         default=None, foreign_key="category.id"
     )

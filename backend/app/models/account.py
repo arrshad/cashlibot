@@ -7,7 +7,9 @@ from datetime import UTC, datetime
 from decimal import Decimal
 from enum import Enum
 
-from sqlalchemy import BigInteger, Column, ForeignKey
+import sqlalchemy as sa
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey
+from sqlalchemy import Enum as SAEnum
 from sqlmodel import Field, SQLModel
 
 
@@ -36,7 +38,17 @@ class Account(SQLModel, table=True):
         )
     )
     name: str
-    type: AccountType
+    type: AccountType = Field(
+        sa_column=Column(
+            SAEnum(
+                AccountType,
+                native_enum=False,
+                length=32,
+                values_callable=lambda cls: [e.value for e in cls],
+            ),
+            nullable=False,
+        ),
+    )
     currency: str
     current_balance: Decimal = Field(
         default=Decimal("0"), max_digits=20, decimal_places=8
@@ -46,4 +58,9 @@ class Account(SQLModel, table=True):
     is_archived: bool = Field(default=False)
     is_default: bool = Field(default=False)
     is_default_income: bool = Field(default=False)
-    created_at: datetime = Field(default_factory=_utcnow)
+    created_at: datetime = Field(
+        default_factory=_utcnow,
+        sa_column=Column(
+            DateTime(timezone=True), nullable=False, server_default=sa.func.now()
+        ),
+    )

@@ -4,12 +4,19 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from sqlalchemy import BigInteger, Column
+import sqlalchemy as sa
+from sqlalchemy import BigInteger, Column, DateTime
 from sqlmodel import Field, SQLModel
 
 
 def _utcnow() -> datetime:
     return datetime.now(UTC)
+
+
+def _tz_dt_column() -> Column:
+    return Column(
+        DateTime(timezone=True), nullable=False, server_default=sa.func.now()
+    )
 
 
 class User(SQLModel, table=True):
@@ -26,5 +33,5 @@ class User(SQLModel, table=True):
     credit_balance: int = Field(default=0)
     is_admin: bool = Field(default=False)
     onboarding_completed: bool = Field(default=False)
-    created_at: datetime = Field(default_factory=_utcnow)
-    updated_at: datetime = Field(default_factory=_utcnow)
+    created_at: datetime = Field(default_factory=_utcnow, sa_column=_tz_dt_column())
+    updated_at: datetime = Field(default_factory=_utcnow, sa_column=_tz_dt_column())

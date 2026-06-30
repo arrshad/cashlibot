@@ -44,6 +44,13 @@
   "onboarding.done.subtitle": "{credits} تا اعتبار اولیه گذاشتم برات. این صفحه رو ببند و بیا تو چت ربات حرف بزنیم.",
   "onboarding.done.close": "بستن",
 
-  "dashboard.placeholder.title": "آماده‌ست",
-  "dashboard.placeholder.body": "داشبورد هنوز ساخته نشده. فعلاً تو چت با ربات حرف بزن — مثلا بگو «۲۵ برای ناهار دادم»."
+  "dashboard.greeting.eyebrow": "سلام،",
+  "dashboard.totals.empty": "هنوز موجودی نداری — تو چت تراکنش ثبت کن.",
+  "dashboard.accounts.title": "حساب‌ها",
+  "dashboard.accounts.add": "افزودن",
+  "dashboard.accounts.empty": "هنوز حسابی نداری. یکی اضافه کن و شروع کنیم.",
+  "dashboard.account.default_chip": "پیش‌فرض",
+  "dashboard.transactions.hint": "تراکنش‌ها بعد از ثبت تو چت اینجا میان. ورود با هوش مصنوعی به‌زودی.",
+  "dashboard.add_account.title": "حساب جدید",
+  "dashboard.add_account.submit": "ساخت"
 }
