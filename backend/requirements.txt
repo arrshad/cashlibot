@@ -1,0 +1,21 @@
+# Bot
+aiogram==3.13.1
+
+# Web API
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+
+# ORM / DB
+sqlmodel==0.0.22
+SQLAlchemy[asyncio]==2.0.36
+asyncpg==0.30.0
+alembic==1.14.0
+
+# Settings & YAML
+# pydantic pinned <2.10 because aiogram 3.13 hasn't bumped its ceiling yet.
+pydantic==2.9.2
+pydantic-settings==2.6.1
+PyYAML==6.0.2
+
+# Cache
+redis[hiredis]==5.2.1

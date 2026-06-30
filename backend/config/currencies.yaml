@@ -1,0 +1,90 @@
+currencies:
+  USD:
+    name: "US Dollar"
+    symbol: "$"
+    symbol_position: "before"
+    decimal_places: 2
+    decimal_separator: "."
+    thousands_separator: ","
+    is_crypto: false
+    enabled: true
+
+  EUR:
+    name: "Euro"
+    symbol: "€"
+    symbol_position: "after"
+    decimal_places: 2
+    decimal_separator: ","
+    thousands_separator: "."
+    is_crypto: false
+    enabled: true
+
+  GBP:
+    name: "British Pound"
+    symbol: "£"
+    symbol_position: "before"
+    decimal_places: 2
+    decimal_separator: "."
+    thousands_separator: ","
+    is_crypto: false
+    enabled: true
+
+  IRR:
+    name: "Iranian Rial"
+    symbol: "﷼"
+    symbol_position: "after"
+    decimal_places: 0
+    decimal_separator: "."
+    thousands_separator: ","
+    is_crypto: false
+    enabled: true
+
+  IRT:
+    name: "Iranian Toman"
+    symbol: "تومان"
+    symbol_position: "after"
+    decimal_places: 0
+    decimal_separator: "."
+    thousands_separator: ","
+    is_crypto: false
+    enabled: true
+
+  AED:
+    name: "UAE Dirham"
+    symbol: "د.إ"
+    symbol_position: "after"
+    decimal_places: 2
+    decimal_separator: "."
+    thousands_separator: ","
+    is_crypto: false
+    enabled: true
+
+  TRY:
+    name: "Turkish Lira"
+    symbol: "₺"
+    symbol_position: "before"
+    decimal_places: 2
+    decimal_separator: ","
+    thousands_separator: "."
+    is_crypto: false
+    enabled: true
+
+  BTC:
+    name: "Bitcoin"
+    symbol: "₿"
+    symbol_position: "before"
+    decimal_places: 8
+    decimal_separator: "."
+    thousands_separator: ","
+    is_crypto: true
+    enabled: true
+
+  USDT:
+    name: "Tether"
+    symbol: "₮"
+    symbol_position: "before"
+    decimal_places: 2
+    decimal_separator: "."
+    thousands_separator: ","
+    is_crypto: true
+    enabled: true
