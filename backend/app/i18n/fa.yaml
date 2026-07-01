@@ -10,6 +10,23 @@ start:
   miniapp_not_configured: |
     آدرس Mini App هنوز تنظیم نشده، نمی‌تونم صفحه‌ی راه‌اندازی رو باز کنم. به ادمین بگو MINIAPP_URL رو تنظیم کنه.
 
+chat:
+  not_registered: "اول /start بزن تا ثبتت کنم."
+  not_onboarded: "اول تنظیمات اولیه رو تموم کن — /start رو بزن و اپ رو باز کن."
+  no_credits: "اعتبارت تموم شده. با /credits شارژ کن."
+  ai_unavailable: "هوش مصنوعی هنوز تنظیم نشده. به ادمین بگو کلید ارائه‌دهنده رو بذاره."
+  ai_error: "یه چیزی از سمت من به هم ریخت. یه لحظه بعد دوباره امتحان کن."
+  ai_empty: "نگرفتم چی گفتی. یه‌جور دیگه بگو؟"
+  preview:
+    confirm: "ثبت کن"
+    cancel: "لغو"
+    confirmed: "ثبت شد."
+    confirmed_short: "ثبت شد"
+    cancelled: "لغو شد."
+    cancelled_short: "لغو"
+    expired: "این پیش‌نمایش منقضی شده. دوباره بگو."
+    failed: "نتونستم ثبتش کنم."
+
 common:
   open_app: "باز کردن اپ"
   setup: "تنظیم"
