@@ -7,6 +7,10 @@ import type {
   AppConfig,
   Budget,
   BudgetCreatePayload,
+  ContributePayload,
+  ContributeResult,
+  SavingsGoal,
+  SavingsGoalCreatePayload,
   Category,
   CategoryType,
   DashboardSummary,
@@ -131,4 +135,31 @@ export async function createBudget(payload: BudgetCreatePayload): Promise<Budget
 
 export async function deleteBudget(id: string): Promise<void> {
   await http.delete(`/api/budgets/${id}`);
+}
+
+export async function fetchGoals(): Promise<SavingsGoal[]> {
+  const { data } = await http.get<SavingsGoal[]>('/api/goals');
+  return data;
+}
+
+export async function createGoal(
+  payload: SavingsGoalCreatePayload,
+): Promise<SavingsGoal> {
+  const { data } = await http.post<SavingsGoal>('/api/goals', payload);
+  return data;
+}
+
+export async function contributeToGoal(
+  id: string,
+  payload: ContributePayload,
+): Promise<ContributeResult> {
+  const { data } = await http.post<ContributeResult>(
+    `/api/goals/${id}/contribute`,
+    payload,
+  );
+  return data;
+}
+
+export async function deleteGoal(id: string): Promise<void> {
+  await http.delete(`/api/goals/${id}`);
 }

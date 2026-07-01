@@ -27,6 +27,12 @@ from app.services.budget_service import (
 )
 from app.services.categorization_service import find_matching_category
 from app.services.memory_service import retrieve_relevant, store_memory
+from app.services.savings_service import (
+    SavingsError,
+    add_contribution,
+    create_goal,
+    list_goals,
+)
 from app.services.transaction_service import list_transactions
 
 log = logging.getLogger(__name__)
@@ -306,6 +312,110 @@ def build_tools(ctx: AgentContext) -> list[BaseTool]:
     # LLM sees "create_budget" rather than "create_budget_tool".
     create_budget_tool.name = "create_budget"
 
+    @tool
+    async def get_savings_goals() -> str:
+        """List the user's savings goals with target, current, and completion."""
+        goals = await list_goals(ctx.session, ctx.user.telegram_id)
+        payload = [
+            {
+                "id": str(g.id),
+                "name": g.name,
+                "target": str(g.target_amount),
+                "current": str(g.current_amount),
+                "currency": g.currency,
+                "deadline": g.deadline.isoformat() if g.deadline else None,
+                "is_completed": g.is_completed,
+                "ratio": float(
+                    g.current_amount / g.target_amount if g.target_amount > 0 else 0
+                ),
+            }
+            for g in goals
+        ]
+        return json.dumps(payload)
+
+    @tool
+    async def create_savings_goal(
+        name: str,
+        target_amount: str,
+        currency: str | None = None,
+        deadline: str | None = None,
+    ) -> str:
+        """Create a new savings goal.
+
+        Args:
+            name: short label (e.g. "New laptop").
+            target_amount: decimal target as string, e.g. "1500".
+            currency: currency code; defaults to the user's default.
+            deadline: optional ISO date (YYYY-MM-DD) the user wants to reach the target by.
+        """
+        try:
+            amount = Decimal(target_amount.strip())
+        except (InvalidOperation, AttributeError):
+            return f"error: target_amount {target_amount!r} is not a valid decimal"
+
+        currency_code = (currency or ctx.user.default_currency or "").upper()
+        if not currency_code:
+            return "error: no currency provided and user has no default"
+
+        deadline_date = None
+        if deadline:
+            try:
+                deadline_date = datetime.fromisoformat(deadline).date()
+            except ValueError:
+                return "error: deadline must be YYYY-MM-DD"
+
+        try:
+            goal = await create_goal(
+                ctx.session,
+                user_id=ctx.user.telegram_id,
+                name=name,
+                target_amount=amount,
+                currency=currency_code,
+                deadline=deadline_date,
+            )
+        except SavingsError as exc:
+            return f"error: {exc}"
+        return f"Goal created: {goal.name} ({goal.target_amount} {goal.currency})."
+
+    @tool
+    async def add_to_savings_goal(goal_name: str, amount: str) -> str:
+        """Log a contribution to a savings goal.
+
+        Args:
+            goal_name: name of the goal (case-insensitive match).
+            amount: decimal amount as string.
+        """
+        try:
+            decimal_amount = Decimal(amount.strip())
+        except (InvalidOperation, AttributeError):
+            return f"error: amount {amount!r} is not a valid decimal"
+
+        goals = await list_goals(ctx.session, ctx.user.telegram_id)
+        q = goal_name.strip().casefold()
+        match = next(
+            (g for g in goals if g.name.casefold() == q),
+            None,
+        ) or next(
+            (g for g in goals if q in g.name.casefold()),
+            None,
+        )
+        if match is None:
+            available = ", ".join(g.name for g in goals) or "(none)"
+            return f"error: no savings goal matches {goal_name!r}. Available: {available}"
+
+        try:
+            updated, just_completed = await add_contribution(
+                ctx.session, goal=match, amount=decimal_amount
+            )
+        except SavingsError as exc:
+            return f"error: {exc}"
+
+        suffix = " Goal reached." if just_completed else ""
+        return (
+            f"Added {decimal_amount} {updated.currency} to {updated.name}. "
+            f"Now {updated.current_amount} / {updated.target_amount}.{suffix}"
+        )
+
     tools: list[BaseTool] = [
         get_accounts,
         get_recent_transactions,
@@ -313,6 +423,9 @@ def build_tools(ctx: AgentContext) -> list[BaseTool]:
         preview_transfer,
         get_budgets,
         create_budget_tool,
+        get_savings_goals,
+        create_savings_goal,
+        add_to_savings_goal,
     ]
 
     # Memory tools only make sense when embeddings are configured. Registering
