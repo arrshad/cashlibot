@@ -23,6 +23,18 @@ gamification:
   level_up: |
     Level up: {from_level} → {to_level}. You're at {total_xp} XP.
 
+credits:
+  balance_and_pick: |
+    You have {balance} credits. Pick a package to top up:
+  package_button: "{label} — {credits} credits · {stars} ⭐️"
+  invoice_title: "{credits} Cashlibot credits"
+  invoice_description: |
+    {label} — {credits} credits for AI features.
+  paid: |
+    Payment received. +{credits} credits. You now have {balance}.
+  paid_duplicate: |
+    Payment already processed — no change to your balance.
+
 chat:
   not_registered: "Send /start first so I can register you."
   not_onboarded: "Finish setup first — tap /start to open the app."

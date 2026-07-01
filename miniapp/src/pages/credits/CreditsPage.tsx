@@ -1,21 +1,53 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { createPurchaseInvoice } from '@/api/client';
 import { Icon } from '@/components/Icon';
 import { t } from '@/i18n';
 import { useAppStore } from '@/store/app';
 import { useCreditsStore } from '@/store/credits';
 import { useNavStore } from '@/store/nav';
+import { openTelegramInvoice } from '@/telegram';
 import { formatDate } from '@/util/format-date';
 import type { CreditHistoryEntry } from '@/types';
 
 export function CreditsPage() {
   const me = useAppStore((s) => s.me!);
+  const refreshMe = useAppStore((s) => s.refreshMe);
   const lang = me.language_code;
   const { status, loading, error, load } = useCreditsStore();
   const go = useNavStore((s) => s.go);
 
+  const [buying, setBuying] = useState<string | null>(null);
+  const [purchaseError, setPurchaseError] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+
   useEffect(() => {
     load();
   }, [load]);
+
+  const buy = async (packageId: string) => {
+    setBuying(packageId);
+    setPurchaseError(null);
+    setToast(null);
+    try {
+      const { invoice_link } = await createPurchaseInvoice(packageId);
+      const status = await openTelegramInvoice(invoice_link);
+      if (status === 'paid') {
+        // The bot's SuccessfulPayment handler will grant credits. Wait a
+        // beat and re-fetch so the UI shows the new balance.
+        await new Promise((r) => setTimeout(r, 800));
+        await load();
+        await refreshMe();
+        setToast(t(lang, 'credits.thank_you'));
+      } else if (status === 'failed') {
+        setPurchaseError(t(lang, 'credits.purchase_failed'));
+      }
+      // 'cancelled' / 'pending' — no toast, user can retry.
+    } catch (err) {
+      setPurchaseError(err instanceof Error ? err.message : 'failed');
+    } finally {
+      setBuying(null);
+    }
+  };
 
   return (
     <div className="app-shell">
@@ -34,6 +66,18 @@ export function CreditsPage() {
         {error && (
           <div className="glass-card" style={{ padding: 16 }}>
             <span className="error-text">{error}</span>
+          </div>
+        )}
+
+        {purchaseError && (
+          <div className="glass-card" style={{ padding: 16 }}>
+            <span className="error-text">{purchaseError}</span>
+          </div>
+        )}
+
+        {toast && (
+          <div className="glass-card" style={{ padding: 16 }}>
+            <span style={{ color: 'var(--accent-success)' }}>{toast}</span>
           </div>
         )}
 
@@ -58,29 +102,30 @@ export function CreditsPage() {
                 <h3 className="section-title">{t(lang, 'credits.buy_title')}</h3>
               </div>
               <div className="credits-packages">
-                {status.packages.map((p) => (
-                  <button
-                    key={p.stars}
-                    className="glass-card credits-package"
-                    onClick={() =>
-                      alert(t(lang, 'credits.purchase_via_bot'))
-                    }
-                  >
-                    <span className="credits-package-label">{p.label}</span>
-                    <span className="credits-package-credits">
-                      {t(lang, 'credits.credits_amount', {
-                        amount: p.credits.toLocaleString(),
-                      })}
-                    </span>
-                    <span className="credits-package-price">
-                      {t(lang, 'credits.stars_price', { stars: p.stars })}
-                    </span>
-                  </button>
-                ))}
+                {status.packages.map((p) => {
+                  const active = buying === p.id;
+                  return (
+                    <button
+                      key={p.id}
+                      className="glass-card credits-package"
+                      disabled={buying !== null}
+                      onClick={() => buy(p.id)}
+                    >
+                      <span className="credits-package-label">{p.label}</span>
+                      <span className="credits-package-credits">
+                        {t(lang, 'credits.credits_amount', {
+                          amount: p.credits.toLocaleString(),
+                        })}
+                      </span>
+                      <span className="credits-package-price">
+                        {active
+                          ? t(lang, 'credits.opening')
+                          : t(lang, 'credits.stars_price', { stars: p.stars })}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
-              <p className="hint-text center" style={{ marginTop: 8 }}>
-                {t(lang, 'credits.purchase_via_bot')}
-              </p>
             </section>
 
             <section className="section">

@@ -11,6 +11,7 @@ import type {
   ContributeResult,
   CreditsStatus,
   GamificationStatus,
+  InvoiceLink,
   Reminder,
   ReminderCreatePayload,
   SavingsGoal,
@@ -58,6 +59,13 @@ export async function patchMe(payload: UserPatchPayload): Promise<Me> {
 
 export async function fetchCredits(): Promise<CreditsStatus> {
   const { data } = await http.get<CreditsStatus>('/api/credits');
+  return data;
+}
+
+export async function createPurchaseInvoice(packageId: string): Promise<InvoiceLink> {
+  const { data } = await http.post<InvoiceLink>(
+    `/api/credits/purchase/${packageId}`,
+  );
   return data;
 }
 

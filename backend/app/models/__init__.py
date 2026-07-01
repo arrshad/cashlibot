@@ -18,6 +18,7 @@ from app.models.gamification import (
 from app.models.memory import EMBEDDING_DIM, MemoryType, UserMemory
 from app.models.reminder import Reminder, ReminderType
 from app.models.savings_goal import SavingsGoal
+from app.models.stars_purchase import StarsPurchase
 from app.models.transaction import Transaction, TransactionSource, TransactionType
 from app.models.user import User
 
@@ -38,6 +39,7 @@ __all__ = [
     "Reminder",
     "ReminderType",
     "SavingsGoal",
+    "StarsPurchase",
     "STREAK_BUDGET_ADHERENCE",
     "STREAK_DAILY_LOG",
     "STREAK_SAVINGS_CONTRIBUTION",
