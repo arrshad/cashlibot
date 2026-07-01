@@ -5,6 +5,8 @@ import type {
   AccountCreatePayload,
   AccountPatchPayload,
   AppConfig,
+  Budget,
+  BudgetCreatePayload,
   Category,
   CategoryType,
   DashboardSummary,
@@ -115,4 +117,18 @@ export async function updateTransaction(
 
 export async function deleteTransaction(id: string): Promise<void> {
   await http.delete(`/api/transactions/${id}`);
+}
+
+export async function fetchBudgets(): Promise<Budget[]> {
+  const { data } = await http.get<Budget[]>('/api/budgets');
+  return data;
+}
+
+export async function createBudget(payload: BudgetCreatePayload): Promise<Budget> {
+  const { data } = await http.post<Budget>('/api/budgets', payload);
+  return data;
+}
+
+export async function deleteBudget(id: string): Promise<void> {
+  await http.delete(`/api/budgets/${id}`);
 }

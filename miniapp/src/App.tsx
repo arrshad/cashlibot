@@ -5,6 +5,8 @@ import { Loading } from '@/pages/Loading';
 import { Onboarding } from '@/pages/onboarding';
 import { Outside } from '@/pages/Outside';
 import { AddAccount } from '@/pages/dashboard/AddAccount';
+import { AddBudget } from '@/pages/budgets/AddBudget';
+import { BudgetList } from '@/pages/budgets/BudgetList';
 import { QuickAdd } from '@/pages/transactions/QuickAdd';
 import { TransactionList } from '@/pages/transactions/TransactionList';
 import { useAppStore } from '@/store/app';
@@ -39,5 +41,9 @@ export default function App() {
       return <QuickAdd />;
     case 'add-account':
       return <AddAccount lang={lang} onDone={() => go({ name: 'dashboard' })} />;
+    case 'budgets':
+      return <BudgetList />;
+    case 'add-budget':
+      return <AddBudget />;
   }
 }

@@ -75,5 +75,22 @@
   "tx.add.description_label": "توضیح",
   "tx.add.submit": "ثبت",
   "tx.list.title": "تراکنش‌ها",
-  "tx.list.empty": "چیزی برای نشون دادن نیست."
+  "tx.list.empty": "چیزی برای نشون دادن نیست.",
+
+  "common.add": "افزودن",
+  "common.remove": "حذف",
+
+  "dashboard.budgets_cta": "بودجه‌ها",
+
+  "budget.unknown_category": "دسته‌ی نامعلوم",
+  "budget.period.weekly": "هفتگی",
+  "budget.period.monthly": "ماهانه",
+  "budget.period.yearly": "سالانه",
+  "budget.list.title": "بودجه‌ها",
+  "budget.list.empty": "هنوز بودجه‌ای نداری. برای دسته‌ای که می‌خوای حواست بهش باشه یکی تنظیم کن.",
+  "budget.add.title": "بودجه‌ی جدید",
+  "budget.add.category_label": "دسته",
+  "budget.add.amount_label": "سقف",
+  "budget.add.period_label": "دوره",
+  "budget.add.submit": "ثبت"
 }

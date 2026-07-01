@@ -10,6 +10,13 @@ start:
   miniapp_not_configured: |
     آدرس Mini App هنوز تنظیم نشده، نمی‌تونم صفحه‌ی راه‌اندازی رو باز کنم. به ادمین بگو MINIAPP_URL رو تنظیم کنه.
 
+budget:
+  notify:
+    warning: |
+      حواست باشه: تو این {period}، {percent}٪ از بودجه‌ی {category} رفت ({spent} از {limit} {currency}).
+    exceeded: |
+      از بودجه‌ی {category} تو این {period} رد شدی ({spent} از {limit} {currency}).
+
 chat:
   not_registered: "اول /start بزن تا ثبتت کنم."
   not_onboarded: "اول تنظیمات اولیه رو تموم کن — /start رو بزن و اپ رو باز کن."

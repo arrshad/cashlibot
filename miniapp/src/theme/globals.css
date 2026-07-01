@@ -17,6 +17,7 @@
   --accent-primary-glow: rgba(124, 110, 245, 0.35);
   --accent-secondary: #3ecfb2;
   --accent-danger: #f0606a;
+  --accent-danger-dim: rgba(240, 96, 106, 0.15);
   --accent-success: #4ccc88;
   --accent-warning: #f5a623;
 
@@ -531,4 +532,84 @@ input, textarea {
 .quick-add-cta {
   align-self: stretch;
   padding: 14px;
+}
+
+.dashboard-actions {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 8px;
+}
+
+/* ----- Budgets ----- */
+
+.text-btn-danger { color: var(--accent-danger); }
+.text-btn-danger:hover { background: var(--accent-danger-dim); }
+
+.budget-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.budget-card {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.budget-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.budget-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.budget-card-period {
+  color: var(--text-secondary);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.budget-card-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.budget-card-progress-bar {
+  flex: 1;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-surface);
+  overflow: hidden;
+}
+
+.budget-card-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  transition: width var(--dur-med) var(--ease);
+}
+
+.budget-card-progress-label {
+  font-weight: 600;
+  font-size: 13px;
+  min-width: 36px;
+  text-align: end;
+}
+
+.budget-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--text-secondary);
 }
