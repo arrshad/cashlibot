@@ -268,3 +268,35 @@ export type ReminderCreatePayload = {
   due_at: string;
   repeat_frequency?: Frequency | null;
 };
+
+export type UserPatchPayload = Partial<{
+  language_code: Lang;
+  calendar_system: CalendarSystem;
+  timezone: string;
+  default_currency: string;
+}>;
+
+export type CreditPackage = { stars: number; credits: number; label: string };
+
+export type CreditReason =
+  | 'signup_bonus'
+  | 'referral_bonus'
+  | 'friend_bonus'
+  | 'stars_purchase'
+  | 'ai_usage'
+  | 'admin_adjustment';
+
+export type CreditHistoryEntry = {
+  id: string;
+  change_amount: number;
+  balance_after: number;
+  reason: CreditReason;
+  reference_id: string | null;
+  created_at: string;
+};
+
+export type CreditsStatus = {
+  balance: number;
+  packages: CreditPackage[];
+  history: CreditHistoryEntry[];
+};

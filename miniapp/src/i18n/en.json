@@ -151,5 +151,30 @@
   "reminder.add.type_label": "Type",
   "reminder.add.repeat_label": "Repeat",
   "reminder.add.description_label": "Note (optional)",
-  "reminder.add.submit": "Save"
+  "reminder.add.submit": "Save",
+
+  "dashboard.credits_cta": "Credits",
+
+  "settings.title": "Settings",
+  "settings.saving": "Saving…",
+  "settings.language": "Language",
+  "settings.calendar": "Calendar",
+  "settings.timezone": "Timezone",
+  "settings.default_currency": "Default currency",
+
+  "credits.title": "Credits",
+  "credits.balance_label": "Balance",
+  "credits.balance_hint": "Credits are spent on AI features.",
+  "credits.buy_title": "Get more",
+  "credits.purchase_via_bot": "Purchases happen in the bot chat via Telegram Stars — coming soon.",
+  "credits.credits_amount": "{amount} credits",
+  "credits.stars_price": "{stars} Stars",
+  "credits.history_title": "History",
+  "credits.history_empty": "No credit changes yet.",
+  "credits.reason.signup_bonus": "Signup bonus",
+  "credits.reason.referral_bonus": "Referral bonus",
+  "credits.reason.friend_bonus": "Friend bonus",
+  "credits.reason.stars_purchase": "Stars purchase",
+  "credits.reason.ai_usage": "AI use",
+  "credits.reason.admin_adjustment": "Admin adjustment"
 }

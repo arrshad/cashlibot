@@ -13,6 +13,8 @@ import { GoalList } from '@/pages/goals/GoalList';
 import { StatsPage } from '@/pages/gamification/StatsPage';
 import { AddReminder } from '@/pages/reminders/AddReminder';
 import { ReminderList } from '@/pages/reminders/ReminderList';
+import { CreditsPage } from '@/pages/credits/CreditsPage';
+import { SettingsPage } from '@/pages/settings/SettingsPage';
 import { QuickAdd } from '@/pages/transactions/QuickAdd';
 import { TransactionList } from '@/pages/transactions/TransactionList';
 import { useAppStore } from '@/store/app';
@@ -63,5 +65,9 @@ export default function App() {
       return <ReminderList />;
     case 'add-reminder':
       return <AddReminder />;
+    case 'settings':
+      return <SettingsPage />;
+    case 'credits':
+      return <CreditsPage />;
   }
 }

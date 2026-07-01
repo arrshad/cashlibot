@@ -151,5 +151,30 @@
   "reminder.add.type_label": "نوع",
   "reminder.add.repeat_label": "تکرار",
   "reminder.add.description_label": "توضیح (اختیاری)",
-  "reminder.add.submit": "ثبت"
+  "reminder.add.submit": "ثبت",
+
+  "dashboard.credits_cta": "اعتبار",
+
+  "settings.title": "تنظیمات",
+  "settings.saving": "در حال ذخیره…",
+  "settings.language": "زبان",
+  "settings.calendar": "تقویم",
+  "settings.timezone": "منطقه‌ی زمانی",
+  "settings.default_currency": "پول پیش‌فرض",
+
+  "credits.title": "اعتبار",
+  "credits.balance_label": "موجودی",
+  "credits.balance_hint": "اعتبار برای امکانات هوش مصنوعی خرج می‌شه.",
+  "credits.buy_title": "خرید بیشتر",
+  "credits.purchase_via_bot": "خرید داخل چت ربات با Telegram Stars انجام می‌شه — به‌زودی.",
+  "credits.credits_amount": "{amount} اعتبار",
+  "credits.stars_price": "{stars} استار",
+  "credits.history_title": "تاریخچه",
+  "credits.history_empty": "هنوز تغییری روی اعتبار نداشتی.",
+  "credits.reason.signup_bonus": "هدیه‌ی ثبت‌نام",
+  "credits.reason.referral_bonus": "هدیه‌ی معرفی",
+  "credits.reason.friend_bonus": "هدیه‌ی دوست",
+  "credits.reason.stars_purchase": "خرید با استار",
+  "credits.reason.ai_usage": "مصرف هوش مصنوعی",
+  "credits.reason.admin_adjustment": "اصلاح ادمین"
 }

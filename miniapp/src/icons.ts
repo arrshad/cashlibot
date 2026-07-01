@@ -21,10 +21,12 @@ import {
   faCheck,
   faCircleMinus,
   faCirclePlus,
+  faCoins,
   faCreditCard,
   faFileInvoiceDollar,
   faFilm,
   faFire,
+  faGear,
   faGift,
   faGraduationCap,
   faHandHoldingHeart,
@@ -98,6 +100,10 @@ const REGISTRY: Record<string, IconDefinition> = {
   'fa-trophy': faTrophy,
   'fa-wand-magic-sparkles': faWandMagicSparkles,
   'fa-bolt': faBolt,
+
+  // Settings / credits
+  'fa-gear': faGear,
+  'fa-coins': faCoins,
 };
 
 export function resolveIcon(name: string | null | undefined): IconDefinition {
