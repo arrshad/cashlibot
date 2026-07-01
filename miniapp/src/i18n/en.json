@@ -92,5 +92,27 @@
   "budget.add.category_label": "Category",
   "budget.add.amount_label": "Limit",
   "budget.add.period_label": "Period",
-  "budget.add.submit": "Save"
+  "budget.add.submit": "Save",
+
+  "dashboard.goals_cta": "Goals",
+
+  "goal.chip.completed": "Done",
+  "goal.contribute": "Add",
+  "goal.deadline_label": "By",
+  "goal.list.title": "Savings goals",
+  "goal.list.empty": "Set a goal for something you're saving toward.",
+  "goal.add.title": "New goal",
+  "goal.add.name_label": "What are you saving for?",
+  "goal.add.name_placeholder": "New laptop, trip, …",
+  "goal.add.target_label": "Target",
+  "goal.add.deadline_label": "Deadline (optional)",
+  "goal.add.linked_account_label": "Linked account (optional)",
+  "goal.add.no_linked_account": "None",
+  "goal.add.submit": "Save",
+  "goal.contribute_title": "Add to goal",
+  "goal.contribute_amount_label": "Amount",
+  "goal.contribute_submit": "Save",
+  "goal.contribute_missing": "That goal is gone.",
+  "goal.completed_title": "Goal reached",
+  "goal.completed_body": "You hit the target on {name}. Nice work."
 }

@@ -7,6 +7,9 @@ import { Outside } from '@/pages/Outside';
 import { AddAccount } from '@/pages/dashboard/AddAccount';
 import { AddBudget } from '@/pages/budgets/AddBudget';
 import { BudgetList } from '@/pages/budgets/BudgetList';
+import { AddGoal } from '@/pages/goals/AddGoal';
+import { ContributeGoal } from '@/pages/goals/ContributeGoal';
+import { GoalList } from '@/pages/goals/GoalList';
 import { QuickAdd } from '@/pages/transactions/QuickAdd';
 import { TransactionList } from '@/pages/transactions/TransactionList';
 import { useAppStore } from '@/store/app';
@@ -45,5 +48,11 @@ export default function App() {
       return <BudgetList />;
     case 'add-budget':
       return <AddBudget />;
+    case 'goals':
+      return <GoalList />;
+    case 'add-goal':
+      return <AddGoal />;
+    case 'contribute-goal':
+      return <ContributeGoal goalId={route.goalId} />;
   }
 }

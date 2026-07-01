@@ -6,7 +6,10 @@ export type Route =
   | { name: 'add-tx' }
   | { name: 'add-account' }
   | { name: 'budgets' }
-  | { name: 'add-budget' };
+  | { name: 'add-budget' }
+  | { name: 'goals' }
+  | { name: 'add-goal' }
+  | { name: 'contribute-goal'; goalId: string };
 
 type NavStore = {
   route: Route;

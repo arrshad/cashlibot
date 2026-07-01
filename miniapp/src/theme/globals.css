@@ -540,6 +540,12 @@ input, textarea {
   gap: 8px;
 }
 
+.dashboard-links {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
 /* ----- Budgets ----- */
 
 .text-btn-danger { color: var(--accent-danger); }
@@ -612,4 +618,72 @@ input, textarea {
   justify-content: space-between;
   font-size: 13px;
   color: var(--text-secondary);
+}
+
+/* ----- Goals ----- */
+
+.goal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.goal-card {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.goal-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.goal-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.goal-card-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.goal-card-progress-bar {
+  flex: 1;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-surface);
+  overflow: hidden;
+}
+
+.goal-card-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent-secondary), var(--accent-primary));
+  transition: width var(--dur-med) var(--ease);
+}
+
+.goal-card-progress-label {
+  font-weight: 600;
+  font-size: 13px;
+  min-width: 36px;
+  text-align: end;
+  color: var(--accent-primary);
+}
+
+.goal-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+  gap: 6px;
 }

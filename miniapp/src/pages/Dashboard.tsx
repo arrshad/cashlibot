@@ -53,18 +53,25 @@ export function Dashboard() {
           />
         )}
 
-        <div className="dashboard-actions">
-          <button
-            className="btn btn-primary quick-add-cta"
-            onClick={() => go({ name: 'add-tx' })}
-          >
-            <Icon name="fa-plus" /> {t(lang, 'dashboard.add_tx_cta')}
-          </button>
+        <button
+          className="btn btn-primary quick-add-cta"
+          onClick={() => go({ name: 'add-tx' })}
+        >
+          <Icon name="fa-plus" /> {t(lang, 'dashboard.add_tx_cta')}
+        </button>
+
+        <div className="dashboard-links">
           <button
             className="btn btn-ghost"
             onClick={() => go({ name: 'budgets' })}
           >
             {t(lang, 'dashboard.budgets_cta')}
+          </button>
+          <button
+            className="btn btn-ghost"
+            onClick={() => go({ name: 'goals' })}
+          >
+            {t(lang, 'dashboard.goals_cta')}
           </button>
         </div>
 

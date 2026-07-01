@@ -8,6 +8,7 @@ from app.api.miniapp import (
     categories,
     config,
     dashboard,
+    goals,
     me,
     onboarding,
     transactions,
@@ -21,6 +22,7 @@ router.include_router(accounts.router)
 router.include_router(categories.router)
 router.include_router(transactions.router)
 router.include_router(budgets.router)
+router.include_router(goals.router)
 router.include_router(dashboard.router)
 
 __all__ = ["router"]

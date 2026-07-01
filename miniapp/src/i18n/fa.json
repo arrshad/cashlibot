@@ -92,5 +92,27 @@
   "budget.add.category_label": "دسته",
   "budget.add.amount_label": "سقف",
   "budget.add.period_label": "دوره",
-  "budget.add.submit": "ثبت"
+  "budget.add.submit": "ثبت",
+
+  "dashboard.goals_cta": "اهداف",
+
+  "goal.chip.completed": "تموم شد",
+  "goal.contribute": "افزودن",
+  "goal.deadline_label": "تا",
+  "goal.list.title": "اهداف پس‌انداز",
+  "goal.list.empty": "برای چیزی که داری براش پس‌انداز می‌کنی یه هدف بذار.",
+  "goal.add.title": "هدف جدید",
+  "goal.add.name_label": "برای چی داری پس‌انداز می‌کنی؟",
+  "goal.add.name_placeholder": "لپ‌تاپ، سفر، …",
+  "goal.add.target_label": "مبلغ هدف",
+  "goal.add.deadline_label": "تاریخ (اختیاری)",
+  "goal.add.linked_account_label": "حساب مرتبط (اختیاری)",
+  "goal.add.no_linked_account": "بدون",
+  "goal.add.submit": "ثبت",
+  "goal.contribute_title": "افزودن به هدف",
+  "goal.contribute_amount_label": "مبلغ",
+  "goal.contribute_submit": "ثبت",
+  "goal.contribute_missing": "این هدف دیگه وجود نداره.",
+  "goal.completed_title": "به هدف رسیدی",
+  "goal.completed_body": "به هدف {name} رسیدی. عالیه."
 }

@@ -182,3 +182,32 @@ export type BudgetCreatePayload = {
   currency: string;
   period: BudgetPeriod;
 };
+
+export type SavingsGoal = {
+  id: string;
+  name: string;
+  icon: string;
+  target_amount: string;
+  current_amount: string;
+  currency: string;
+  deadline: string | null;
+  linked_account_id: string | null;
+  is_completed: boolean;
+  created_at: string;
+};
+
+export type SavingsGoalCreatePayload = {
+  name: string;
+  target_amount: string;
+  currency: string;
+  icon?: string;
+  deadline?: string | null;
+  linked_account_id?: string | null;
+};
+
+export type ContributePayload = { amount: string };
+
+export type ContributeResult = {
+  goal: SavingsGoal;
+  just_completed: boolean;
+};
