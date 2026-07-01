@@ -276,7 +276,14 @@ export type UserPatchPayload = Partial<{
   default_currency: string;
 }>;
 
-export type CreditPackage = { stars: number; credits: number; label: string };
+export type CreditPackage = {
+  id: string;
+  stars: number;
+  credits: number;
+  label: string;
+};
+
+export type InvoiceLink = { invoice_link: string };
 
 export type CreditReason =
   | 'signup_bonus'

@@ -12,6 +12,8 @@ type TelegramTheme = {
   hint_color?: string;
 };
 
+export type InvoiceStatus = 'paid' | 'cancelled' | 'failed' | 'pending';
+
 type TelegramWebApp = {
   initData: string;
   themeParams: TelegramTheme;
@@ -19,6 +21,7 @@ type TelegramWebApp = {
   ready: () => void;
   expand: () => void;
   close: () => void;
+  openInvoice?: (url: string, callback?: (status: InvoiceStatus) => void) => void;
 };
 
 declare global {
@@ -38,4 +41,20 @@ export function getInitDataRaw(): string {
 export function notifyReady(): void {
   getTelegramWebApp()?.ready();
   getTelegramWebApp()?.expand();
+}
+
+/**
+ * Opens the Telegram Stars payment sheet with the given invoice URL.
+ * Resolves once the payment sheet closes with a terminal status.
+ * Rejects if the client can't handle invoices (older Telegram version).
+ */
+export function openTelegramInvoice(url: string): Promise<InvoiceStatus> {
+  const tg = getTelegramWebApp();
+  return new Promise((resolve, reject) => {
+    if (!tg || typeof tg.openInvoice !== 'function') {
+      reject(new Error('openInvoice not supported by this Telegram client'));
+      return;
+    }
+    tg.openInvoice(url, (status) => resolve(status));
+  });
 }

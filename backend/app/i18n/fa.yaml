@@ -23,6 +23,18 @@ gamification:
   level_up: |
     یه لِوِل بالا رفتی: {from_level} → {to_level}. الان {total_xp} امتیاز داری.
 
+credits:
+  balance_and_pick: |
+    {balance} اعتبار داری. یه پکیج انتخاب کن تا شارژ بشی:
+  package_button: "{label} — {credits} اعتبار · {stars} ⭐️"
+  invoice_title: "{credits} اعتبار Cashlibot"
+  invoice_description: |
+    {label} — {credits} اعتبار برای امکانات هوش مصنوعی.
+  paid: |
+    پرداخت انجام شد. +{credits} اعتبار. الان {balance} اعتبار داری.
+  paid_duplicate: |
+    این پرداخت قبلاً ثبت شده — تغییری تو موجودیت اعمال نشد.
+
 chat:
   not_registered: "اول /start بزن تا ثبتت کنم."
   not_onboarded: "اول تنظیمات اولیه رو تموم کن — /start رو بزن و اپ رو باز کن."

@@ -1,40 +1,43 @@
-"""GET /api/credits — balance, purchase packages, and recent history."""
+"""GET /api/credits + POST /api/credits/purchase (Telegram Stars invoice link)."""
 
 from __future__ import annotations
 
 from datetime import datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from aiogram import Bot
+from aiogram.types import LabeledPrice
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user, get_session
+from app.core.config import get_settings
 from app.models.credit import CreditReason, CreditTransaction
 from app.models.user import User
+from app.services.subscription_service import (
+    PACKAGES,
+    StarsPackage,
+    build_invoice_payload,
+    get_package,
+)
 
 router = APIRouter(prefix="/credits")
 
-
-# Packages the Mini App shows on the "buy more" tab. Purchase happens on the
-# bot side via Telegram Stars — the Mini App just displays these tiles until
-# the Stars flow lands as its own branch.
-_PACKAGES: list[dict[str, int | str]] = [
-    {"stars": 50, "credits": 50, "label": "Starter"},
-    {"stars": 200, "credits": 220, "label": "Standard"},
-    {"stars": 500, "credits": 600, "label": "Plus"},
-    {"stars": 1000, "credits": 1300, "label": "Pro"},
-]
-
-# How many recent ledger entries to return for the history panel.
 _HISTORY_LIMIT = 30
+_STARS_CURRENCY = "XTR"
 
 
 class CreditPackage(BaseModel):
+    id: str
     stars: int
     credits: int
     label: str
+
+    @classmethod
+    def from_dataclass(cls, p: StarsPackage) -> "CreditPackage":
+        return cls(id=p.id, stars=p.stars, credits=p.credits, label=p.label)
 
 
 class CreditHistoryEntry(BaseModel):
@@ -52,6 +55,10 @@ class CreditsOut(BaseModel):
     history: list[CreditHistoryEntry]
 
 
+class InvoiceLinkOut(BaseModel):
+    invoice_link: str
+
+
 @router.get("", response_model=CreditsOut)
 async def get_credits(
     user: Annotated[User, Depends(get_current_user)],
@@ -67,7 +74,7 @@ async def get_credits(
 
     return CreditsOut(
         balance=user.credit_balance,
-        packages=[CreditPackage(**p) for p in _PACKAGES],  # type: ignore[arg-type]
+        packages=[CreditPackage.from_dataclass(p) for p in PACKAGES],
         history=[
             CreditHistoryEntry(
                 id=str(r.id),
@@ -80,3 +87,41 @@ async def get_credits(
             for r in rows
         ],
     )
+
+
+@router.post("/purchase/{package_id}", response_model=InvoiceLinkOut)
+async def create_invoice_link(
+    package_id: str,
+    _user: Annotated[User, Depends(get_current_user)],
+) -> InvoiceLinkOut:
+    """Return a Telegram Stars invoice URL that the Mini App hands to
+    `Telegram.WebApp.openInvoice`. Payment is actually processed by the
+    bot's PreCheckoutQuery + SuccessfulPayment handlers — that's where the
+    credit ledger is written to, idempotently.
+    """
+    package = get_package(package_id)
+    if package is None:
+        raise HTTPException(404, "unknown package")
+
+    settings = get_settings()
+    if not settings.telegram_bot_token:
+        raise HTTPException(503, "telegram_bot_token not configured")
+
+    bot = Bot(token=settings.telegram_bot_token)
+    try:
+        link = await bot.create_invoice_link(
+            title=f"{package.credits} Cashlibot credits",
+            description=(
+                f"{package.label} — {package.credits} credits for AI features."
+            ),
+            payload=build_invoice_payload(package),
+            provider_token="",
+            currency=_STARS_CURRENCY,
+            prices=[
+                LabeledPrice(label=f"{package.credits} credits", amount=package.stars)
+            ],
+        )
+    finally:
+        await bot.session.close()
+
+    return InvoiceLinkOut(invoice_link=link)

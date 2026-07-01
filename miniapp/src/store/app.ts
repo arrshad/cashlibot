@@ -11,6 +11,7 @@ type AppStore = {
   error: string | null;
   load: () => Promise<void>;
   reloadCategories: () => Promise<void>;
+  refreshMe: () => Promise<void>;
   setMe: (me: Me) => void;
 };
 
@@ -42,5 +43,10 @@ export const useAppStore = create<AppStore>((set) => ({
   reloadCategories: async () => {
     const categories = await fetchCategories();
     set({ categories });
+  },
+  refreshMe: async () => {
+    const me = await fetchMe();
+    applyHtmlLang(me.language_code);
+    set({ me });
   },
 }));
