@@ -114,5 +114,18 @@
   "goal.contribute_submit": "Save",
   "goal.contribute_missing": "That goal is gone.",
   "goal.completed_title": "Goal reached",
-  "goal.completed_body": "You hit the target on {name}. Nice work."
+  "goal.completed_body": "You hit the target on {name}. Nice work.",
+
+  "dashboard.stats_cta": "Stats",
+
+  "stats.title": "Progress",
+  "stats.level_label": "Level",
+  "stats.total_xp": "{xp} XP total",
+  "stats.streaks_title": "Streaks",
+  "stats.streaks_empty": "No streak yet. Log a transaction today to start one.",
+  "stats.streak.daily_log": "Days logged",
+  "stats.streak.budget_adherence": "Periods within budget",
+  "stats.streak.savings_contribution": "Weeks saving",
+  "stats.streak_best": "Best: {count}",
+  "stats.badges_title": "Badges"
 }

@@ -73,6 +73,12 @@ export function Dashboard() {
           >
             {t(lang, 'dashboard.goals_cta')}
           </button>
+          <button
+            className="btn btn-ghost"
+            onClick={() => go({ name: 'stats' })}
+          >
+            {t(lang, 'dashboard.stats_cta')}
+          </button>
         </div>
 
         <section className="section">

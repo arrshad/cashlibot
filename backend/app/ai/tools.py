@@ -27,6 +27,12 @@ from app.services.budget_service import (
 )
 from app.services.categorization_service import find_matching_category
 from app.services.memory_service import retrieve_relevant, store_memory
+from app.services.gamification_service import (
+    _get_or_create_xp,
+    list_earned_badges,
+    list_streaks,
+    on_savings_contribution,
+)
 from app.services.savings_service import (
     SavingsError,
     add_contribution,
@@ -410,11 +416,40 @@ def build_tools(ctx: AgentContext) -> list[BaseTool]:
         except SavingsError as exc:
             return f"error: {exc}"
 
+        # Gamification for AI-driven contributions runs here (no preview flow).
+        await on_savings_contribution(
+            ctx.session, user_id=ctx.user.telegram_id, just_completed=just_completed
+        )
+
         suffix = " Goal reached." if just_completed else ""
         return (
             f"Added {decimal_amount} {updated.currency} to {updated.name}. "
             f"Now {updated.current_amount} / {updated.target_amount}.{suffix}"
         )
+
+    @tool
+    async def get_user_stats() -> str:
+        """Return the user's level, XP, streaks, and earned badges as JSON."""
+        xp = await _get_or_create_xp(ctx.session, ctx.user.telegram_id)
+        streaks = await list_streaks(ctx.session, ctx.user.telegram_id)
+        earned = await list_earned_badges(ctx.session, ctx.user.telegram_id)
+        payload = {
+            "level": xp.level,
+            "total_xp": xp.total_xp,
+            "streaks": [
+                {
+                    "type": s.streak_type,
+                    "current": s.current_count,
+                    "best": s.best_count,
+                }
+                for s in streaks
+            ],
+            "badges_earned": [
+                {"id": b.id, "name": b.name, "earned_at": ub.earned_at.isoformat()}
+                for b, ub in earned
+            ],
+        }
+        return json.dumps(payload)
 
     tools: list[BaseTool] = [
         get_accounts,
@@ -426,6 +461,7 @@ def build_tools(ctx: AgentContext) -> list[BaseTool]:
         get_savings_goals,
         create_savings_goal,
         add_to_savings_goal,
+        get_user_stats,
     ]
 
     # Memory tools only make sense when embeddings are configured. Registering

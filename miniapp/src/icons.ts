@@ -10,7 +10,9 @@ import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
   faArrowLeft,
   faArrowRight,
+  faAward,
   faBagShopping,
+  faBolt,
   faBriefcase,
   faBuildingColumns,
   faCar,
@@ -22,6 +24,7 @@ import {
   faCreditCard,
   faFileInvoiceDollar,
   faFilm,
+  faFire,
   faGift,
   faGraduationCap,
   faHandHoldingHeart,
@@ -36,11 +39,14 @@ import {
   faPlus,
   faRepeat,
   faRightLeft,
+  faShoePrints,
   faSpa,
   faTag,
   faTrashCan,
+  faTrophy,
   faUtensils,
   faWallet,
+  faWandMagicSparkles,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -84,6 +90,14 @@ const REGISTRY: Record<string, IconDefinition> = {
   'fa-right-left': faRightLeft,
   'fa-check': faCheck,
   'fa-xmark': faXmark,
+
+  // Gamification / badges
+  'fa-shoe-prints': faShoePrints,
+  'fa-fire': faFire,
+  'fa-award': faAward,
+  'fa-trophy': faTrophy,
+  'fa-wand-magic-sparkles': faWandMagicSparkles,
+  'fa-bolt': faBolt,
 };
 
 export function resolveIcon(name: string | null | undefined): IconDefinition {

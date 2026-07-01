@@ -23,6 +23,12 @@ from app.models.user import User
 from app.services.budget_service import ThresholdCrossing, check_after_expense
 from app.services.categorization_service import upsert_rule
 from app.services.category_service import list_categories
+from app.services.gamification_service import (
+    BadgeEarned,
+    GamificationEvent,
+    LevelUp,
+    on_transaction_created,
+)
 from app.services.transaction_service import (
     TransactionError,
     create_transaction,
@@ -76,9 +82,10 @@ async def handle_preview_action(cb: CallbackQuery) -> None:
         # Confirm: create the transaction, then clean up the preview.
         crossing: ThresholdCrossing | None = None
         category_name = ""
+        events: list[GamificationEvent] = []
         try:
             async with session_scope() as session:
-                crossing, category_name = await _create_from_preview(
+                crossing, category_name, events = await _create_from_preview(
                     session,
                     preview,
                     cb.message.message_id if cb.message else None,
@@ -98,6 +105,8 @@ async def handle_preview_action(cb: CallbackQuery) -> None:
                 await cb.message.answer(
                     _format_threshold(lang, i18n, crossing, category_name)
                 )
+            for line in _format_gamification(lang, i18n, events):
+                await cb.message.answer(line)
     finally:
         await redis.aclose()
 
@@ -108,12 +117,12 @@ async def _create_from_preview(
     reply_to_message_id: int | None,
     *,
     user_timezone: str,
-) -> tuple[ThresholdCrossing | None, str]:
-    """Create the transaction, upsert rule, and return any budget crossing."""
+) -> tuple[ThresholdCrossing | None, str, list[GamificationEvent]]:
+    """Create the transaction, upsert rule, and return budget crossing + gamification events."""
     tx_type = TransactionType(preview.type)
     category_uuid = uuid.UUID(preview.category_id) if preview.category_id else None
 
-    await create_transaction(
+    tx = await create_transaction(
         session,
         user_id=preview.user_id,
         type=tx_type,
@@ -160,7 +169,45 @@ async def _create_from_preview(
                     category_display = c.name_en or c.name
                     break
 
-    return crossing, category_display
+    # Gamification — streaks, XP, badges, level ups.
+    events = await on_transaction_created(
+        session,
+        user_id=preview.user_id,
+        source=tx.source,
+        tz_name=user_timezone,
+    )
+
+    return crossing, category_display, events
+
+
+def _format_gamification(lang: str, i18n, events: list[GamificationEvent]) -> list[str]:
+    lines: list[str] = []
+    for event in events:
+        if isinstance(event, BadgeEarned):
+            name = (
+                event.badge.name_fa
+                if lang == "fa" and event.badge.name_fa
+                else event.badge.name
+            )
+            desc = (
+                event.badge.description_fa
+                if lang == "fa" and event.badge.description_fa
+                else event.badge.description
+            )
+            lines.append(
+                i18n.t(lang, "gamification.badge_earned", name=name, description=desc)
+            )
+        elif isinstance(event, LevelUp):
+            lines.append(
+                i18n.t(
+                    lang,
+                    "gamification.level_up",
+                    from_level=event.from_level,
+                    to_level=event.to_level,
+                    total_xp=event.total_xp,
+                )
+            )
+    return lines
 
 
 def _format_threshold(lang: str, i18n, crossing: ThresholdCrossing, category: str) -> str:

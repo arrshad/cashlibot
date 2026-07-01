@@ -9,6 +9,7 @@ import type {
   BudgetCreatePayload,
   ContributePayload,
   ContributeResult,
+  GamificationStatus,
   SavingsGoal,
   SavingsGoalCreatePayload,
   Category,
@@ -162,4 +163,9 @@ export async function contributeToGoal(
 
 export async function deleteGoal(id: string): Promise<void> {
   await http.delete(`/api/goals/${id}`);
+}
+
+export async function fetchGamification(): Promise<GamificationStatus> {
+  const { data } = await http.get<GamificationStatus>('/api/gamification/status');
+  return data;
 }

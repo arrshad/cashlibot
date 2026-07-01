@@ -17,6 +17,12 @@ budget:
     exceeded: |
       از بودجه‌ی {category} تو این {period} رد شدی ({spent} از {limit} {currency}).
 
+gamification:
+  badge_earned: |
+    نشان جدید — {name}. {description}
+  level_up: |
+    یه لِوِل بالا رفتی: {from_level} → {to_level}. الان {total_xp} امتیاز داری.
+
 chat:
   not_registered: "اول /start بزن تا ثبتت کنم."
   not_onboarded: "اول تنظیمات اولیه رو تموم کن — /start رو بزن و اپ رو باز کن."
