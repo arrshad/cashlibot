@@ -436,3 +436,99 @@ input, textarea {
   font-size: 15px;
   white-space: nowrap;
 }
+
+/* ----- Transactions ----- */
+
+.tx-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tx-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+}
+
+.tx-row-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  display: grid;
+  place-items: center;
+}
+
+.tx-row-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tx-row-title {
+  font-weight: 600;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tx-row-sub {
+  color: var(--text-secondary);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tx-row-amount {
+  font-weight: 700;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+/* ----- Quick-add ----- */
+
+.type-toggle {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 4px;
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-glass-border);
+  border-radius: var(--radius-pill);
+}
+
+.type-toggle-btn {
+  padding: 10px;
+  border-radius: var(--radius-pill);
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 14px;
+  transition: background var(--dur-fast) var(--ease),
+              color var(--dur-fast) var(--ease);
+}
+
+.type-toggle-btn-active {
+  background: var(--accent-primary);
+  color: #fff;
+  box-shadow: 0 4px 16px var(--accent-primary-glow);
+}
+
+.input-amount {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-align: center;
+  padding: 20px 16px;
+}
+
+.quick-add-cta {
+  align-self: stretch;
+  padding: 14px;
+}

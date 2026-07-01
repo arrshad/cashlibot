@@ -5,10 +5,16 @@ import type {
   AccountCreatePayload,
   AccountPatchPayload,
   AppConfig,
+  Category,
+  CategoryType,
   DashboardSummary,
   Me,
   OnboardingPayload,
   OnboardingResult,
+  Transaction,
+  TransactionCreatePayload,
+  TransactionListFilters,
+  TransactionPatchPayload,
 } from '@/types';
 
 // In dev, the Mini App is served on :5173 and the API runs at :8000.
@@ -74,4 +80,39 @@ export async function archiveAccount(id: string): Promise<void> {
 export async function fetchDashboardSummary(): Promise<DashboardSummary> {
   const { data } = await http.get<DashboardSummary>('/api/dashboard/summary');
   return data;
+}
+
+export async function fetchCategories(type?: CategoryType): Promise<Category[]> {
+  const { data } = await http.get<Category[]>('/api/categories', {
+    params: type ? { type } : undefined,
+  });
+  return data;
+}
+
+export async function fetchTransactions(
+  filters: TransactionListFilters = {},
+): Promise<Transaction[]> {
+  const { data } = await http.get<Transaction[]>('/api/transactions', {
+    params: filters,
+  });
+  return data;
+}
+
+export async function createTransaction(
+  payload: TransactionCreatePayload,
+): Promise<Transaction> {
+  const { data } = await http.post<Transaction>('/api/transactions', payload);
+  return data;
+}
+
+export async function updateTransaction(
+  id: string,
+  payload: TransactionPatchPayload,
+): Promise<Transaction> {
+  const { data } = await http.patch<Transaction>(`/api/transactions/${id}`, payload);
+  return data;
+}
+
+export async function deleteTransaction(id: string): Promise<void> {
+  await http.delete(`/api/transactions/${id}`);
 }

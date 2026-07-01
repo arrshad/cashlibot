@@ -3,6 +3,7 @@
 from app.models.account import Account, AccountType
 from app.models.category import Category, CategoryType
 from app.models.credit import CreditReason, CreditTransaction
+from app.models.transaction import Transaction, TransactionSource, TransactionType
 from app.models.user import User
 
 __all__ = [
@@ -12,5 +13,8 @@ __all__ = [
     "CategoryType",
     "CreditReason",
     "CreditTransaction",
+    "Transaction",
+    "TransactionSource",
+    "TransactionType",
     "User",
 ]
