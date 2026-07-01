@@ -10,6 +10,13 @@ start:
   miniapp_not_configured: |
     The Mini App URL isn't set yet, so I can't open the setup screen for you. Ask the admin to set MINIAPP_URL in the bot config.
 
+budget:
+  notify:
+    warning: |
+      Heads up: {percent}% of your {category} budget is gone this {period} ({spent} / {limit} {currency}).
+    exceeded: |
+      You've gone past your {category} budget this {period} ({spent} / {limit} {currency}).
+
 chat:
   not_registered: "Send /start first so I can register you."
   not_onboarded: "Finish setup first — tap /start to open the app."

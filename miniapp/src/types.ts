@@ -160,3 +160,25 @@ export type DashboardSummary = {
   default_currency: string | null;
   recent_transactions: Transaction[];
 };
+
+export type BudgetPeriod = 'weekly' | 'monthly' | 'yearly';
+
+export type Budget = {
+  id: string;
+  category_id: string;
+  amount: string;
+  spent: string;
+  ratio: number;
+  currency: string;
+  period: BudgetPeriod;
+  is_active: boolean;
+  period_start: string;
+  period_end: string;
+};
+
+export type BudgetCreatePayload = {
+  category_id: string;
+  amount: string;
+  currency: string;
+  period: BudgetPeriod;
+};

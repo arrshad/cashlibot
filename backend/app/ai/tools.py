@@ -17,8 +17,14 @@ from app.ai.preview_store import (
     save_preview,
 )
 from app.models.account import Account
+from app.models.budget import BudgetPeriod
 from app.models.category import Category
 from app.models.memory import MemoryType
+from app.services.budget_service import (
+    BudgetError,
+    create_budget,
+    list_with_usage,
+)
 from app.services.categorization_service import find_matching_category
 from app.services.memory_service import retrieve_relevant, store_memory
 from app.services.transaction_service import list_transactions
@@ -228,11 +234,85 @@ def build_tools(ctx: AgentContext) -> list[BaseTool]:
             f"Summary: {preview.summary_en}"
         )
 
+    @tool
+    async def get_budgets() -> str:
+        """List the user's active budgets with current-period usage (spent, ratio, period end)."""
+        usages = await list_with_usage(
+            ctx.session, user_id=ctx.user.telegram_id, tz_name=ctx.user.timezone
+        )
+        payload = [
+            {
+                "category_id": str(u.budget.category_id),
+                "category": _category_name(ctx.categories, u.budget.category_id),
+                "amount": str(u.budget.amount),
+                "spent": str(u.spent),
+                "currency": u.budget.currency,
+                "period": u.budget.period.value,
+                "ratio": float(u.ratio),
+                "period_end": u.period_end.isoformat(),
+            }
+            for u in usages
+        ]
+        return json.dumps(payload)
+
+    @tool
+    async def create_budget_tool(
+        category: str,
+        amount: str,
+        period: str,
+        currency: str | None = None,
+    ) -> str:
+        """Set (or update) a spending budget for one category.
+
+        Args:
+            category: category name (e.g. "Food"). Must be one of the user's expense categories.
+            amount: decimal limit as a string, e.g. "500".
+            period: "weekly", "monthly", or "yearly".
+            currency: optional currency code; defaults to the user's default currency.
+        """
+        cat = _match_category(ctx.categories, category, "expense")
+        if cat is None:
+            return f"error: no expense category matches {category!r}"
+        try:
+            decimal_amount = Decimal(amount.strip())
+        except (InvalidOperation, AttributeError):
+            return f"error: amount {amount!r} is not a valid decimal"
+        try:
+            period_enum = BudgetPeriod(period.strip().lower())
+        except ValueError:
+            return "error: period must be 'weekly', 'monthly', or 'yearly'"
+
+        currency_code = (currency or ctx.user.default_currency or "").upper()
+        if not currency_code:
+            return "error: no currency specified and user has no default"
+
+        try:
+            budget = await create_budget(
+                ctx.session,
+                user_id=ctx.user.telegram_id,
+                category_id=cat.id,
+                amount=decimal_amount,
+                currency=currency_code,
+                period=period_enum,
+            )
+        except BudgetError as exc:
+            return f"error: {exc}"
+        return (
+            f"Budget set: {budget.amount} {budget.currency} "
+            f"for {cat.name_en} per {budget.period.value}."
+        )
+
+    # LangChain registers each @tool under its function's name. Rename so the
+    # LLM sees "create_budget" rather than "create_budget_tool".
+    create_budget_tool.name = "create_budget"
+
     tools: list[BaseTool] = [
         get_accounts,
         get_recent_transactions,
         preview_transaction,
         preview_transfer,
+        get_budgets,
+        create_budget_tool,
     ]
 
     # Memory tools only make sense when embeddings are configured. Registering
@@ -294,6 +374,17 @@ def _match_account(accounts: list[Account], query: str) -> Account | None:
         if q in a.name.casefold():
             return a
     return None
+
+
+def _category_name(categories: list[Category], category_id) -> str:
+    """Best-effort lookup of a category's user-facing name from its id."""
+    import uuid as _uuid
+
+    key = _uuid.UUID(str(category_id))
+    for c in categories:
+        if c.id == key:
+            return c.name_en or c.name
+    return "?"
 
 
 def _match_category(

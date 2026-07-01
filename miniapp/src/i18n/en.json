@@ -75,5 +75,22 @@
   "tx.add.description_label": "Note",
   "tx.add.submit": "Save",
   "tx.list.title": "Transactions",
-  "tx.list.empty": "Nothing here yet."
+  "tx.list.empty": "Nothing here yet.",
+
+  "common.add": "Add",
+  "common.remove": "Remove",
+
+  "dashboard.budgets_cta": "Budgets",
+
+  "budget.unknown_category": "Unknown category",
+  "budget.period.weekly": "Weekly",
+  "budget.period.monthly": "Monthly",
+  "budget.period.yearly": "Yearly",
+  "budget.list.title": "Budgets",
+  "budget.list.empty": "No budgets yet. Set one for a category you want to keep an eye on.",
+  "budget.add.title": "New budget",
+  "budget.add.category_label": "Category",
+  "budget.add.amount_label": "Limit",
+  "budget.add.period_label": "Period",
+  "budget.add.submit": "Save"
 }

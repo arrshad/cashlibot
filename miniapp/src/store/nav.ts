@@ -4,7 +4,9 @@ export type Route =
   | { name: 'dashboard' }
   | { name: 'transactions' }
   | { name: 'add-tx' }
-  | { name: 'add-account' };
+  | { name: 'add-account' }
+  | { name: 'budgets' }
+  | { name: 'add-budget' };
 
 type NavStore = {
   route: Route;

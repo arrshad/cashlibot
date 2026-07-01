@@ -20,7 +20,9 @@ from app.core.redis import make_redis
 from app.i18n import get_i18n
 from app.models.transaction import TransactionSource, TransactionType
 from app.models.user import User
+from app.services.budget_service import ThresholdCrossing, check_after_expense
 from app.services.categorization_service import upsert_rule
+from app.services.category_service import list_categories
 from app.services.transaction_service import (
     TransactionError,
     create_transaction,
@@ -72,9 +74,16 @@ async def handle_preview_action(cb: CallbackQuery) -> None:
             return
 
         # Confirm: create the transaction, then clean up the preview.
+        crossing: ThresholdCrossing | None = None
+        category_name = ""
         try:
             async with session_scope() as session:
-                await _create_from_preview(session, preview, cb.message.message_id if cb.message else None)
+                crossing, category_name = await _create_from_preview(
+                    session,
+                    preview,
+                    cb.message.message_id if cb.message else None,
+                    user_timezone=user.timezone if user else "UTC",
+                )
         except TransactionError as exc:
             log.warning("confirm failed: %s", exc)
             await cb.answer(i18n.t(lang, "chat.preview.failed"), show_alert=True)
@@ -85,6 +94,10 @@ async def handle_preview_action(cb: CallbackQuery) -> None:
         if cb.message:
             await cb.message.edit_reply_markup(reply_markup=None)
             await cb.message.answer(i18n.t(lang, "chat.preview.confirmed"))
+            if crossing is not None:
+                await cb.message.answer(
+                    _format_threshold(lang, i18n, crossing, category_name)
+                )
     finally:
         await redis.aclose()
 
@@ -93,16 +106,22 @@ async def _create_from_preview(
     session,
     preview: TransactionPreview,
     reply_to_message_id: int | None,
-) -> None:
+    *,
+    user_timezone: str,
+) -> tuple[ThresholdCrossing | None, str]:
+    """Create the transaction, upsert rule, and return any budget crossing."""
+    tx_type = TransactionType(preview.type)
+    category_uuid = uuid.UUID(preview.category_id) if preview.category_id else None
+
     await create_transaction(
         session,
         user_id=preview.user_id,
-        type=TransactionType(preview.type),
+        type=tx_type,
         account_id=uuid.UUID(preview.account_id),
         amount=Decimal(preview.amount),
         occurred_at=datetime.fromisoformat(preview.occurred_at_iso),
         to_account_id=uuid.UUID(preview.to_account_id) if preview.to_account_id else None,
-        category_id=uuid.UUID(preview.category_id) if preview.category_id else None,
+        category_id=category_uuid,
         merchant=preview.merchant,
         description=preview.description,
         source=TransactionSource.AI_PARSED,
@@ -112,13 +131,52 @@ async def _create_from_preview(
 
     # If the confirmed transaction had both a merchant and a category, remember
     # that pairing so the AI can auto-categorize this merchant next time.
-    if preview.merchant and preview.category_id:
+    if preview.merchant and category_uuid is not None:
         try:
             await upsert_rule(
                 session,
                 user_id=preview.user_id,
                 keyword=preview.merchant,
-                category_id=uuid.UUID(preview.category_id),
+                category_id=category_uuid,
             )
         except ValueError:
             pass
+
+    # Budget threshold check — only expenses count against budgets.
+    crossing: ThresholdCrossing | None = None
+    category_display = ""
+    if tx_type == TransactionType.EXPENSE:
+        crossing = await check_after_expense(
+            session,
+            user_id=preview.user_id,
+            category_id=category_uuid,
+            added_amount=Decimal(preview.amount),
+            tz_name=user_timezone,
+        )
+        if crossing is not None:
+            cats = await list_categories(session, user_id=preview.user_id)
+            for c in cats:
+                if c.id == crossing.budget.category_id:
+                    category_display = c.name_en or c.name
+                    break
+
+    return crossing, category_display
+
+
+def _format_threshold(lang: str, i18n, crossing: ThresholdCrossing, category: str) -> str:
+    ratio = (crossing.spent / crossing.limit) if crossing.limit > 0 else Decimal(0)
+    key = (
+        "budget.notify.exceeded"
+        if crossing.level == "exceeded"
+        else "budget.notify.warning"
+    )
+    return i18n.t(
+        lang,
+        key,
+        category=category or "?",
+        period=crossing.budget.period.value,
+        spent=str(crossing.spent),
+        limit=str(crossing.limit),
+        currency=crossing.budget.currency,
+        percent=int(ratio * 100),
+    )
