@@ -127,5 +127,29 @@
   "stats.streak.budget_adherence": "دوره‌های در بودجه",
   "stats.streak.savings_contribution": "هفته‌های پس‌انداز",
   "stats.streak_best": "بهترین: {count}",
-  "stats.badges_title": "نشان‌ها"
+  "stats.badges_title": "نشان‌ها",
+
+  "dashboard.reminders_cta": "یادآوری‌ها",
+
+  "reminder.list.title": "یادآوری‌ها",
+  "reminder.list.empty": "چیزی زمان‌بندی نشده. یکی تنظیم کن تا سر وقت خبرت کنم.",
+  "reminder.chip.done": "انجام شد",
+  "reminder.frequency.none": "یک‌بار",
+  "reminder.frequency.daily": "روزانه",
+  "reminder.frequency.weekly": "هفتگی",
+  "reminder.frequency.monthly": "ماهانه",
+  "reminder.frequency.yearly": "سالانه",
+  "reminder.type.transaction_log": "ثبت تراکنش",
+  "reminder.type.pay_someone": "پرداخت به کسی",
+  "reminder.type.bill_due": "سررسید قبض",
+  "reminder.type.monthly_review": "مرور ماهانه",
+  "reminder.type.custom": "دلخواه",
+  "reminder.add.title": "یادآوری جدید",
+  "reminder.add.title_label": "درباره‌ی چی؟",
+  "reminder.add.title_placeholder": "پرداخت اجاره، مرور بودجه، …",
+  "reminder.add.due_label": "کِی",
+  "reminder.add.type_label": "نوع",
+  "reminder.add.repeat_label": "تکرار",
+  "reminder.add.description_label": "توضیح (اختیاری)",
+  "reminder.add.submit": "ثبت"
 }

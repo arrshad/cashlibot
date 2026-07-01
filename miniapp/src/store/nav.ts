@@ -10,7 +10,9 @@ export type Route =
   | { name: 'goals' }
   | { name: 'add-goal' }
   | { name: 'contribute-goal'; goalId: string }
-  | { name: 'stats' };
+  | { name: 'stats' }
+  | { name: 'reminders' }
+  | { name: 'add-reminder' };
 
 type NavStore = {
   route: Route;
