@@ -19,3 +19,8 @@ PyYAML==6.0.2
 
 # Cache
 redis[hiredis]==5.2.1
+
+# AI orchestration — provider-agnostic via langchain factories.
+langchain==0.3.10
+langchain-openai==0.2.14
+langchain-anthropic==0.3.1

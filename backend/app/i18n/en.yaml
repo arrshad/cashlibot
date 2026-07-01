@@ -10,6 +10,23 @@ start:
   miniapp_not_configured: |
     The Mini App URL isn't set yet, so I can't open the setup screen for you. Ask the admin to set MINIAPP_URL in the bot config.
 
+chat:
+  not_registered: "Send /start first so I can register you."
+  not_onboarded: "Finish setup first — tap /start to open the app."
+  no_credits: "You're out of credits. Use /credits to top up."
+  ai_unavailable: "The AI isn't configured yet. Ask the admin to set the provider key."
+  ai_error: "Something broke on my side. Try again in a moment."
+  ai_empty: "I didn't catch that. Can you rephrase?"
+  preview:
+    confirm: "Log it"
+    cancel: "Cancel"
+    confirmed: "Logged."
+    confirmed_short: "Logged"
+    cancelled: "Cancelled."
+    cancelled_short: "Cancelled"
+    expired: "That preview expired. Send it again."
+    failed: "Couldn't save that one."
+
 common:
   open_app: "Open the app"
   setup: "Set up"

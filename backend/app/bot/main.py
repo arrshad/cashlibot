@@ -10,7 +10,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
-from app.bot.routers import start
+from app.bot.routers import chat, preview, start
 from app.core.bootstrap import load_app_context
 from app.core.config import get_settings
 from app.core.logging import configure_logging
@@ -39,7 +39,11 @@ async def run() -> int:
         default=DefaultBotProperties(parse_mode=ParseMode.HTML),
     )
     dp = Dispatcher()
+    # Order matters: command handlers first, callback handlers next, then the
+    # free-text catch-all last so commands don't fall through into the AI.
     dp.include_router(start.router)
+    dp.include_router(preview.router)
+    dp.include_router(chat.router)
 
     me = await bot.get_me()
     log.info("bot online: @%s (id=%s)", me.username, me.id)
