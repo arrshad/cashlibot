@@ -10,6 +10,7 @@ from decimal import Decimal, InvalidOperation
 from langchain_core.tools import BaseTool, tool
 
 from app.ai.context import AgentContext
+from app.ai.embeddings import embeddings_available
 from app.ai.preview_store import (
     TransactionPreview,
     new_preview_id,
@@ -17,6 +18,9 @@ from app.ai.preview_store import (
 )
 from app.models.account import Account
 from app.models.category import Category
+from app.models.memory import MemoryType
+from app.services.categorization_service import find_matching_category
+from app.services.memory_service import retrieve_relevant, store_memory
 from app.services.transaction_service import list_transactions
 
 log = logging.getLogger(__name__)
@@ -109,6 +113,16 @@ def build_tools(ctx: AgentContext) -> list[BaseTool]:
                     "Omit the category argument if unsure."
                 )
             category_id = str(cat.id)
+        else:
+            # No category from the LLM — try to auto-fill from a learned rule
+            # (merchant first, then description, then the raw user message).
+            hint = merchant or description or ctx.raw_input_text
+            if hint:
+                rule_hit = await find_matching_category(
+                    ctx.session, user_id=ctx.user.telegram_id, text=hint
+                )
+                if rule_hit is not None:
+                    category_id = str(rule_hit)
 
         occurred_at = _parse_iso(occurred_at_iso) or datetime.now(UTC)
 
@@ -214,7 +228,57 @@ def build_tools(ctx: AgentContext) -> list[BaseTool]:
             f"Summary: {preview.summary_en}"
         )
 
-    return [get_accounts, get_recent_transactions, preview_transaction, preview_transfer]
+    tools: list[BaseTool] = [
+        get_accounts,
+        get_recent_transactions,
+        preview_transaction,
+        preview_transfer,
+    ]
+
+    # Memory tools only make sense when embeddings are configured. Registering
+    # them conditionally keeps the LLM from calling into a dead code path.
+    if embeddings_available():
+
+        @tool
+        async def remember(content: str, memory_type: str = "preference") -> str:
+            """Persist a fact or preference about the user for future turns.
+
+            memory_type: one of preference | account_default | category_habit | contact | context.
+            Use this when the user states a lasting rule ("I always pay Netflix from the black card",
+            "my rent is 800 EUR"). Don't use it for one-off events — those go through transactions.
+            """
+            try:
+                mem_type = MemoryType(memory_type)
+            except ValueError:
+                allowed = ", ".join(m.value for m in MemoryType)
+                return f"error: memory_type must be one of {allowed}"
+            stored = await store_memory(
+                ctx.session,
+                user_id=ctx.user.telegram_id,
+                content=content,
+                memory_type=mem_type,
+            )
+            if stored is None:
+                return "error: memory subsystem not available"
+            return f"Stored ({mem_type.value})."
+
+        @tool
+        async def search_memories(query: str, top_k: int = 5) -> str:
+            """Semantic search of the user's stored preferences and habits."""
+            capped = max(1, min(int(top_k), 10))
+            hits = await retrieve_relevant(
+                ctx.session,
+                user_id=ctx.user.telegram_id,
+                query=query,
+                top_k=capped,
+            )
+            if not hits:
+                return "no relevant memories"
+            return json.dumps(hits)
+
+        tools.extend([remember, search_memories])
+
+    return tools
 
 
 # ---------- internal helpers ----------

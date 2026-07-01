@@ -21,6 +21,10 @@ class AgentContext:
     # agent asks about accounts / categories in the same turn.
     accounts: list[Account]
     categories: list[Category]
+    # Retrieved memories relevant to this turn's user message. Injected into
+    # the system prompt so the LLM sees "known preferences" without spending
+    # a tool call.
+    memories: list[str] = field(default_factory=list)
     # Collected side-effects — every preview id the tools push here is
     # surfaced to the bot handler so it can render confirm/cancel buttons.
     pending_preview_ids: list[str] = field(default_factory=list)

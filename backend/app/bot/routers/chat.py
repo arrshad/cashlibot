@@ -26,6 +26,7 @@ from app.models.user import User
 from app.services.account_service import list_accounts
 from app.services.category_service import list_categories
 from app.services.credit_service import deduct_credits
+from app.services.memory_service import retrieve_relevant
 
 log = logging.getLogger(__name__)
 router = Router(name="chat")
@@ -73,12 +74,16 @@ async def handle_free_text(message: Message) -> None:
                 return  # shouldn't happen — we just charged them
             accounts = await list_accounts(session, tg_user.id)
             categories = await list_categories(session, user_id=tg_user.id)
+            memories = await retrieve_relevant(
+                session, user_id=tg_user.id, query=message.text
+            )
             ctx = AgentContext(
                 user=user,
                 session=session,
                 redis=redis,
                 accounts=accounts,
                 categories=categories,
+                memories=memories,
             )
             try:
                 result = await run_agent(
