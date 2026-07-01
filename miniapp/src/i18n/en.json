@@ -179,5 +179,24 @@
   "credits.reason.friend_bonus": "Friend bonus",
   "credits.reason.stars_purchase": "Stars purchase",
   "credits.reason.ai_usage": "AI use",
-  "credits.reason.admin_adjustment": "Admin adjustment"
+  "credits.reason.admin_adjustment": "Admin adjustment",
+
+  "dashboard.recurring_cta": "Recurring",
+
+  "recurring.list.title": "Recurring",
+  "recurring.list.empty": "No recurring templates yet. Bills, salary, rent — set them once and I'll ping you when they're due.",
+  "recurring.next_due": "next due",
+  "recurring.frequency.daily": "Daily",
+  "recurring.frequency.weekly": "Weekly",
+  "recurring.frequency.monthly": "Monthly",
+  "recurring.frequency.yearly": "Yearly",
+  "recurring.add.title": "New recurring",
+  "recurring.add.description_label": "What is it?",
+  "recurring.add.description_placeholder": "Netflix, rent, salary, …",
+  "recurring.add.amount_label": "Amount",
+  "recurring.add.account_label": "Account",
+  "recurring.add.category_label": "Category",
+  "recurring.add.frequency_label": "How often",
+  "recurring.add.next_due_label": "First due date",
+  "recurring.add.submit": "Save"
 }

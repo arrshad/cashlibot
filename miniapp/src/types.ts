@@ -269,6 +269,28 @@ export type ReminderCreatePayload = {
   repeat_frequency?: Frequency | null;
 };
 
+export type RecurringTemplate = {
+  id: string;
+  account_id: string;
+  category_id: string;
+  amount: string;
+  currency: string;
+  description: string;
+  frequency: Frequency;
+  next_due_date: string; // YYYY-MM-DD
+  is_active: boolean;
+  created_at: string;
+};
+
+export type RecurringCreatePayload = {
+  account_id: string;
+  category_id: string;
+  amount: string;
+  description: string;
+  frequency: Frequency;
+  next_due_date: string;
+};
+
 export type UserPatchPayload = Partial<{
   language_code: Lang;
   calendar_system: CalendarSystem;

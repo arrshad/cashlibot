@@ -100,6 +100,12 @@ export function Dashboard() {
           </button>
           <button
             className="btn btn-ghost"
+            onClick={() => go({ name: 'recurring' })}
+          >
+            {t(lang, 'dashboard.recurring_cta')}
+          </button>
+          <button
+            className="btn btn-ghost"
             onClick={() => go({ name: 'stats' })}
           >
             {t(lang, 'dashboard.stats_cta')}

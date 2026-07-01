@@ -13,6 +13,8 @@ export type Route =
   | { name: 'stats' }
   | { name: 'reminders' }
   | { name: 'add-reminder' }
+  | { name: 'recurring' }
+  | { name: 'add-recurring' }
   | { name: 'settings' }
   | { name: 'credits' };
 
