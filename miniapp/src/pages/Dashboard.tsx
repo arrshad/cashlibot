@@ -26,10 +26,29 @@ export function Dashboard() {
   return (
     <div className="app-shell">
       <div className="app-frame">
-        <header className="dashboard-greeting">
-          <span className="hint-text">{t(lang, 'dashboard.greeting.eyebrow')}</span>
-          <h1 className="hero-title">{me.display_name}</h1>
-        </header>
+        <div className="dashboard-topbar">
+          <header className="dashboard-greeting" style={{ padding: 0 }}>
+            <span className="hint-text">{t(lang, 'dashboard.greeting.eyebrow')}</span>
+            <h1 className="hero-title">{me.display_name}</h1>
+          </header>
+          <div className="dashboard-topbar-actions">
+            <button
+              className="credits-chip"
+              onClick={() => go({ name: 'credits' })}
+              aria-label={t(lang, 'dashboard.credits_cta')}
+            >
+              <Icon name="fa-coins" />
+              <span>{me.credit_balance.toLocaleString()}</span>
+            </button>
+            <button
+              className="icon-btn"
+              onClick={() => go({ name: 'settings' })}
+              aria-label={t(lang, 'settings.title')}
+            >
+              <Icon name="fa-gear" />
+            </button>
+          </div>
+        </div>
 
         {error && (
           <div className="glass-card" style={{ padding: 16 }}>

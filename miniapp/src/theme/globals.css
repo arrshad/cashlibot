@@ -832,3 +832,107 @@ input, textarea {
 .badge-earned { }
 .badge-locked { opacity: 0.4; }
 .badge-locked .badge-tile-icon { color: var(--text-tertiary); }
+
+/* ----- Dashboard topbar ----- */
+
+.dashboard-topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 0 4px;
+  gap: 12px;
+}
+
+.dashboard-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.credits-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-glass);
+  border: 1px solid var(--bg-glass-border);
+  color: var(--accent-warning);
+  font-weight: 600;
+  font-size: 14px;
+  transition: background var(--dur-fast) var(--ease);
+}
+.credits-chip:hover { background: var(--bg-glass-strong); }
+
+/* ----- Settings ----- */
+
+.settings-card {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ----- Credits ----- */
+
+.credits-balance {
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.credits-balance-value {
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--accent-warning);
+}
+
+.credits-packages {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.credits-package {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  transition: background var(--dur-fast) var(--ease);
+  cursor: pointer;
+  text-align: start;
+}
+.credits-package:hover { background: var(--bg-glass-strong); }
+
+.credits-package-label {
+  color: var(--text-secondary);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.credits-package-credits { font-size: 18px; font-weight: 700; }
+.credits-package-price {
+  color: var(--accent-warning);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.credit-history { display: flex; flex-direction: column; gap: 6px; }
+
+.history-row {
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.history-row-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.history-row-reason { font-weight: 500; font-size: 14px; }
+.history-row-date { color: var(--text-tertiary); font-size: 12px; }
+.history-row-amount { font-weight: 700; font-size: 15px; }

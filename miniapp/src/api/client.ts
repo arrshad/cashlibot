@@ -9,11 +9,13 @@ import type {
   BudgetCreatePayload,
   ContributePayload,
   ContributeResult,
+  CreditsStatus,
   GamificationStatus,
   Reminder,
   ReminderCreatePayload,
   SavingsGoal,
   SavingsGoalCreatePayload,
+  UserPatchPayload,
   Category,
   CategoryType,
   DashboardSummary,
@@ -46,6 +48,16 @@ http.interceptors.request.use((config) => {
 
 export async function fetchMe(): Promise<Me> {
   const { data } = await http.get<Me>('/api/me');
+  return data;
+}
+
+export async function patchMe(payload: UserPatchPayload): Promise<Me> {
+  const { data } = await http.patch<Me>('/api/me', payload);
+  return data;
+}
+
+export async function fetchCredits(): Promise<CreditsStatus> {
+  const { data } = await http.get<CreditsStatus>('/api/credits');
   return data;
 }
 
