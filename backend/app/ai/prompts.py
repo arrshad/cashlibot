@@ -46,7 +46,7 @@ no obvious match, ask.
 # Categories
 Income:  {', '.join(income_cats)}
 Expense: {', '.join(expense_cats)}
-
+{_memories_block(ctx)}
 # How you log transactions
 Never write to the database yourself. Whenever the user is describing an
 income, expense, or transfer, call `preview_transaction` (or
@@ -86,3 +86,10 @@ def _split_categories(ctx: AgentContext) -> tuple[list[str], list[str]]:
     income = [c.name_en for c in ctx.categories if c.type == CategoryType.INCOME and not c.is_archived]
     expense = [c.name_en for c in ctx.categories if c.type == CategoryType.EXPENSE and not c.is_archived]
     return income, expense
+
+
+def _memories_block(ctx: AgentContext) -> str:
+    if not ctx.memories:
+        return ""
+    bullets = "\n".join(f"- {m}" for m in ctx.memories)
+    return f"\n# What I remember about this user\n{bullets}\n"

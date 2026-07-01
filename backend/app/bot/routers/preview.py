@@ -20,6 +20,7 @@ from app.core.redis import make_redis
 from app.i18n import get_i18n
 from app.models.transaction import TransactionSource, TransactionType
 from app.models.user import User
+from app.services.categorization_service import upsert_rule
 from app.services.transaction_service import (
     TransactionError,
     create_transaction,
@@ -108,3 +109,16 @@ async def _create_from_preview(
         raw_input_text=preview.raw_input_text,
         reply_to_message_id=reply_to_message_id,
     )
+
+    # If the confirmed transaction had both a merchant and a category, remember
+    # that pairing so the AI can auto-categorize this merchant next time.
+    if preview.merchant and preview.category_id:
+        try:
+            await upsert_rule(
+                session,
+                user_id=preview.user_id,
+                keyword=preview.merchant,
+                category_id=uuid.UUID(preview.category_id),
+            )
+        except ValueError:
+            pass
