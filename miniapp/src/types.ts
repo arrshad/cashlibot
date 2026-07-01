@@ -211,3 +211,31 @@ export type ContributeResult = {
   goal: SavingsGoal;
   just_completed: boolean;
 };
+
+export type StreakStatus = {
+  streak_type: string;
+  current_count: number;
+  best_count: number;
+  last_activity_date: string | null;
+};
+
+export type BadgeStatus = {
+  id: string;
+  name: string;
+  name_fa: string | null;
+  description: string;
+  description_fa: string | null;
+  icon: string;
+  xp_reward: number;
+  earned: boolean;
+  earned_at: string | null;
+};
+
+export type GamificationStatus = {
+  level: number;
+  total_xp: number;
+  xp_into_level: number;
+  xp_for_level: number;
+  streaks: StreakStatus[];
+  badges: BadgeStatus[];
+};

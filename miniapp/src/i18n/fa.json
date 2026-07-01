@@ -114,5 +114,18 @@
   "goal.contribute_submit": "ثبت",
   "goal.contribute_missing": "این هدف دیگه وجود نداره.",
   "goal.completed_title": "به هدف رسیدی",
-  "goal.completed_body": "به هدف {name} رسیدی. عالیه."
+  "goal.completed_body": "به هدف {name} رسیدی. عالیه.",
+
+  "dashboard.stats_cta": "پیشرفت",
+
+  "stats.title": "پیشرفت",
+  "stats.level_label": "سطح",
+  "stats.total_xp": "مجموع {xp} امتیاز",
+  "stats.streaks_title": "استریک‌ها",
+  "stats.streaks_empty": "هنوز استریکی نداری. امروز یه تراکنش ثبت کن تا شروع بشه.",
+  "stats.streak.daily_log": "روزهای ثبت‌شده",
+  "stats.streak.budget_adherence": "دوره‌های در بودجه",
+  "stats.streak.savings_contribution": "هفته‌های پس‌انداز",
+  "stats.streak_best": "بهترین: {count}",
+  "stats.badges_title": "نشان‌ها"
 }

@@ -15,6 +15,7 @@ from app.api.deps import get_current_user, get_session
 from app.core.bootstrap import load_app_context
 from app.models.savings_goal import SavingsGoal
 from app.models.user import User
+from app.services.gamification_service import on_savings_contribution
 from app.services.savings_service import (
     SavingsError,
     add_contribution,
@@ -166,4 +167,9 @@ async def contribute_to_my_goal(
         )
     except SavingsError as exc:
         raise HTTPException(400, str(exc)) from exc
+
+    await on_savings_contribution(
+        session, user_id=user.telegram_id, just_completed=just_completed
+    )
+
     return ContributeOut(goal=GoalOut.from_model(updated), just_completed=just_completed)

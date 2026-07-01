@@ -14,6 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import get_current_user, get_session
 from app.models.transaction import Transaction, TransactionSource, TransactionType
 from app.models.user import User
+from app.services.gamification_service import on_transaction_created
 from app.services.transaction_service import (
     TransactionError,
     create_transaction,
@@ -131,6 +132,17 @@ async def create_my_transaction(
         )
     except TransactionError as exc:
         raise HTTPException(400, str(exc)) from exc
+
+    # Gamification runs after the tx is in the DB. Events are swallowed here
+    # (the Mini App refreshes its own stats when the user opens the screen);
+    # the bot preview handler surfaces them as chat messages instead.
+    await on_transaction_created(
+        session,
+        user_id=user.telegram_id,
+        source=tx.source,
+        tz_name=user.timezone,
+    )
+
     return TransactionOut.from_model(tx)
 
 

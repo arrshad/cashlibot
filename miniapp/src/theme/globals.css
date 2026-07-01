@@ -542,9 +542,10 @@ input, textarea {
 
 .dashboard-links {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
 }
+.dashboard-links .btn { font-size: 13px; padding: 12px 8px; }
 
 /* ----- Budgets ----- */
 
@@ -687,3 +688,95 @@ input, textarea {
   flex-wrap: wrap;
   gap: 6px;
 }
+
+/* ----- Gamification ----- */
+
+.level-card {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.level-card-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.level-card-label {
+  color: var(--text-secondary);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.level-card-value {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #ffffff, var(--accent-primary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.level-progress {
+  height: 10px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-surface);
+  overflow: hidden;
+}
+.level-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent-secondary), var(--accent-primary));
+  transition: width var(--dur-med) var(--ease);
+}
+
+.streak-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.streak-card {
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.streak-card-body { display: flex; flex-direction: column; gap: 2px; }
+.streak-card-value { font-size: 24px; font-weight: 700; }
+.streak-card-label { color: var(--text-secondary); font-size: 13px; }
+
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.badge-tile {
+  padding: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  transition: opacity var(--dur-fast) var(--ease);
+}
+.badge-tile-icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  display: grid;
+  place-items: center;
+  color: var(--accent-primary);
+}
+.badge-tile-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.badge-tile-name { font-weight: 600; font-size: 14px; }
+.badge-tile-desc { font-size: 12px; color: var(--text-secondary); }
+
+.badge-earned { }
+.badge-locked { opacity: 0.4; }
+.badge-locked .badge-tile-icon { color: var(--text-tertiary); }

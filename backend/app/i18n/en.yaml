@@ -17,6 +17,12 @@ budget:
     exceeded: |
       You've gone past your {category} budget this {period} ({spent} / {limit} {currency}).
 
+gamification:
+  badge_earned: |
+    New badge — {name}. {description}
+  level_up: |
+    Level up: {from_level} → {to_level}. You're at {total_xp} XP.
+
 chat:
   not_registered: "Send /start first so I can register you."
   not_onboarded: "Finish setup first — tap /start to open the app."
