@@ -100,8 +100,63 @@ export type CurrencyTotal = {
   amount: string;
 };
 
+export type TransactionType = 'income' | 'expense' | 'transfer';
+export type TransactionSource = 'manual' | 'ai_parsed' | 'recurring';
+export type CategoryType = 'income' | 'expense';
+
+export type Category = {
+  id: string;
+  name: string;
+  name_en: string;
+  name_fa: string | null;
+  type: CategoryType;
+  icon: string;
+  color: string | null;
+  parent_id: string | null;
+};
+
+export type Transaction = {
+  id: string;
+  account_id: string;
+  to_account_id: string | null;
+  category_id: string | null;
+  type: TransactionType;
+  amount: string;
+  currency: string;
+  merchant: string | null;
+  description: string | null;
+  occurred_at: string;
+  source: TransactionSource;
+  created_at: string;
+  updated_at: string;
+};
+
+export type TransactionCreatePayload = {
+  type: TransactionType;
+  account_id: string;
+  amount: string;
+  occurred_at: string;
+  to_account_id?: string | null;
+  category_id?: string | null;
+  merchant?: string | null;
+  description?: string | null;
+};
+
+export type TransactionPatchPayload = Partial<TransactionCreatePayload>;
+
+export type TransactionListFilters = {
+  account_id?: string;
+  category_id?: string;
+  type?: TransactionType;
+  start?: string;
+  end?: string;
+  limit?: number;
+  offset?: number;
+};
+
 export type DashboardSummary = {
   totals_by_currency: CurrencyTotal[];
   account_count: number;
   default_currency: string | null;
+  recent_transactions: Transaction[];
 };

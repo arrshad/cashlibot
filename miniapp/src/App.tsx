@@ -4,18 +4,22 @@ import { ErrorView } from '@/pages/ErrorView';
 import { Loading } from '@/pages/Loading';
 import { Onboarding } from '@/pages/onboarding';
 import { Outside } from '@/pages/Outside';
+import { AddAccount } from '@/pages/dashboard/AddAccount';
+import { QuickAdd } from '@/pages/transactions/QuickAdd';
+import { TransactionList } from '@/pages/transactions/TransactionList';
 import { useAppStore } from '@/store/app';
+import { useNavStore } from '@/store/nav';
 import { getInitDataRaw, notifyReady } from '@/telegram';
 
 export default function App() {
   const { me, config, loading, error, load } = useAppStore();
+  const route = useNavStore((s) => s.route);
+  const go = useNavStore((s) => s.go);
   const initData = getInitDataRaw();
 
   useEffect(() => {
     notifyReady();
-    if (initData) {
-      load();
-    }
+    if (initData) load();
   }, [initData, load]);
 
   if (!initData) return <Outside />;
@@ -23,5 +27,17 @@ export default function App() {
   if (error) return <ErrorView message={error} onRetry={load} />;
   if (!me || !config) return <Loading />;
   if (!me.onboarding_completed) return <Onboarding />;
-  return <Dashboard />;
+
+  const lang = me.language_code;
+
+  switch (route.name) {
+    case 'dashboard':
+      return <Dashboard />;
+    case 'transactions':
+      return <TransactionList />;
+    case 'add-tx':
+      return <QuickAdd />;
+    case 'add-account':
+      return <AddAccount lang={lang} onDone={() => go({ name: 'dashboard' })} />;
+  }
 }

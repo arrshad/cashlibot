@@ -1,20 +1,23 @@
 import { create } from 'zustand';
-import { fetchConfig, fetchMe } from '@/api/client';
+import { fetchCategories, fetchConfig, fetchMe } from '@/api/client';
 import { applyHtmlLang } from '@/i18n';
-import type { AppConfig, Me } from '@/types';
+import type { AppConfig, Category, Me } from '@/types';
 
 type AppStore = {
   me: Me | null;
   config: AppConfig | null;
+  categories: Category[];
   loading: boolean;
   error: string | null;
   load: () => Promise<void>;
+  reloadCategories: () => Promise<void>;
   setMe: (me: Me) => void;
 };
 
 export const useAppStore = create<AppStore>((set) => ({
   me: null,
   config: null,
+  categories: [],
   loading: true,
   error: null,
   setMe: (me) => {
@@ -24,13 +27,20 @@ export const useAppStore = create<AppStore>((set) => ({
   load: async () => {
     set({ loading: true, error: null });
     try {
-      const [me, config] = await Promise.all([fetchMe(), fetchConfig()]);
+      const [me, config, categories] = await Promise.all([
+        fetchMe(),
+        fetchConfig(),
+        fetchCategories().catch(() => [] as Category[]),
+      ]);
       applyHtmlLang(me.language_code);
-      set({ me, config, loading: false });
+      set({ me, config, categories, loading: false });
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : 'failed to load';
+      const message = err instanceof Error ? err.message : 'failed to load';
       set({ loading: false, error: message });
     }
+  },
+  reloadCategories: async () => {
+    const categories = await fetchCategories();
+    set({ categories });
   },
 }));

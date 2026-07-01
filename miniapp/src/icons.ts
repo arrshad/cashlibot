@@ -9,6 +9,7 @@
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
   faArrowLeft,
+  faArrowRight,
   faBagShopping,
   faBriefcase,
   faBuildingColumns,
@@ -34,6 +35,7 @@ import {
   faPlane,
   faPlus,
   faRepeat,
+  faRightLeft,
   faSpa,
   faTag,
   faTrashCan,
@@ -78,6 +80,8 @@ const REGISTRY: Record<string, IconDefinition> = {
   'fa-pen': faPen,
   'fa-trash-can': faTrashCan,
   'fa-arrow-left': faArrowLeft,
+  'fa-arrow-right': faArrowRight,
+  'fa-right-left': faRightLeft,
   'fa-check': faCheck,
   'fa-xmark': faXmark,
 };
