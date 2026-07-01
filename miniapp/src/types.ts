@@ -239,3 +239,32 @@ export type GamificationStatus = {
   streaks: StreakStatus[];
   badges: BadgeStatus[];
 };
+
+export type Frequency = 'daily' | 'weekly' | 'monthly' | 'yearly';
+
+export type ReminderType =
+  | 'transaction_log'
+  | 'pay_someone'
+  | 'bill_due'
+  | 'monthly_review'
+  | 'custom';
+
+export type Reminder = {
+  id: string;
+  title: string;
+  description: string | null;
+  reminder_type: ReminderType;
+  due_at: string;
+  repeat_frequency: Frequency | null;
+  is_active: boolean;
+  last_fired_at: string | null;
+  created_at: string;
+};
+
+export type ReminderCreatePayload = {
+  title: string;
+  description?: string | null;
+  reminder_type?: ReminderType;
+  due_at: string;
+  repeat_frequency?: Frequency | null;
+};

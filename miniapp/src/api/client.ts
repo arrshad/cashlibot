@@ -10,6 +10,8 @@ import type {
   ContributePayload,
   ContributeResult,
   GamificationStatus,
+  Reminder,
+  ReminderCreatePayload,
   SavingsGoal,
   SavingsGoalCreatePayload,
   Category,
@@ -168,4 +170,20 @@ export async function deleteGoal(id: string): Promise<void> {
 export async function fetchGamification(): Promise<GamificationStatus> {
   const { data } = await http.get<GamificationStatus>('/api/gamification/status');
   return data;
+}
+
+export async function fetchReminders(): Promise<Reminder[]> {
+  const { data } = await http.get<Reminder[]>('/api/reminders');
+  return data;
+}
+
+export async function createReminder(
+  payload: ReminderCreatePayload,
+): Promise<Reminder> {
+  const { data } = await http.post<Reminder>('/api/reminders', payload);
+  return data;
+}
+
+export async function deleteReminder(id: string): Promise<void> {
+  await http.delete(`/api/reminders/${id}`);
 }

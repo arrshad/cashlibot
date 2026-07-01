@@ -27,3 +27,7 @@ langchain-anthropic==0.3.1
 
 # Semantic memory via pgvector (Postgres extension enabled in migration 0001).
 pgvector==0.3.6
+
+# Scheduler for reminders (recurring transactions will reuse it later).
+APScheduler==3.10.4
+python-dateutil==2.9.0.post0

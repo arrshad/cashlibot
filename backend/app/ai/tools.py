@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import uuid as _uuid
 from datetime import UTC, datetime
 from decimal import Decimal, InvalidOperation
 
@@ -19,7 +20,9 @@ from app.ai.preview_store import (
 from app.models.account import Account
 from app.models.budget import BudgetPeriod
 from app.models.category import Category
+from app.models.frequency import Frequency
 from app.models.memory import MemoryType
+from app.models.reminder import ReminderType
 from app.services.budget_service import (
     BudgetError,
     create_budget,
@@ -32,6 +35,13 @@ from app.services.gamification_service import (
     list_earned_badges,
     list_streaks,
     on_savings_contribution,
+)
+from app.services.reminder_service import (
+    ReminderError,
+    create_reminder,
+    delete_reminder as delete_reminder_service,
+    get_reminder as get_reminder_service,
+    list_reminders,
 )
 from app.services.savings_service import (
     SavingsError,
@@ -451,6 +461,102 @@ def build_tools(ctx: AgentContext) -> list[BaseTool]:
         }
         return json.dumps(payload)
 
+    @tool
+    async def create_reminder_tool(
+        title: str,
+        due_at_iso: str,
+        description: str | None = None,
+        reminder_type: str = "custom",
+        repeat_frequency: str | None = None,
+    ) -> str:
+        """Create a chat reminder.
+
+        Args:
+            title: short label the user will see when it fires.
+            due_at_iso: ISO 8601 datetime when the reminder should fire. Include
+                timezone if you know it; UTC is assumed otherwise.
+            description: optional longer body.
+            reminder_type: one of transaction_log | pay_someone | bill_due |
+                monthly_review | custom. Defaults to custom.
+            repeat_frequency: daily | weekly | monthly | yearly for repeating
+                reminders. Omit for one-shot.
+        """
+        try:
+            due_at = datetime.fromisoformat(due_at_iso.replace("Z", "+00:00"))
+        except ValueError:
+            return f"error: due_at_iso {due_at_iso!r} isn't a valid ISO datetime"
+        if due_at.tzinfo is None:
+            due_at = due_at.replace(tzinfo=UTC)
+
+        try:
+            r_type = ReminderType(reminder_type)
+        except ValueError:
+            allowed = ", ".join(t.value for t in ReminderType)
+            return f"error: reminder_type must be one of {allowed}"
+
+        freq: Frequency | None = None
+        if repeat_frequency:
+            try:
+                freq = Frequency(repeat_frequency)
+            except ValueError:
+                return "error: repeat_frequency must be daily / weekly / monthly / yearly"
+
+        try:
+            reminder = await create_reminder(
+                ctx.session,
+                user_id=ctx.user.telegram_id,
+                title=title,
+                due_at=due_at,
+                reminder_type=r_type,
+                description=description,
+                repeat_frequency=freq,
+            )
+        except ReminderError as exc:
+            return f"error: {exc}"
+        return (
+            f"Reminder set: {reminder.title} at {reminder.due_at.isoformat()}"
+            + (f" (repeats {freq.value})" if freq else "")
+        )
+
+    # Give the LLM the cleaner name.
+    create_reminder_tool.name = "create_reminder"
+
+    @tool
+    async def get_reminders() -> str:
+        """List the user's active reminders as JSON."""
+        rows = await list_reminders(ctx.session, ctx.user.telegram_id)
+        return json.dumps(
+            [
+                {
+                    "id": str(r.id),
+                    "title": r.title,
+                    "due_at": r.due_at.isoformat(),
+                    "repeat_frequency": r.repeat_frequency.value
+                    if r.repeat_frequency
+                    else None,
+                    "type": r.reminder_type.value,
+                }
+                for r in rows
+            ]
+        )
+
+    @tool
+    async def delete_reminder_tool(reminder_id: str) -> str:
+        """Delete a reminder by its id (get it from get_reminders)."""
+        try:
+            uid = _uuid.UUID(reminder_id)
+        except (ValueError, TypeError):
+            return f"error: invalid reminder id {reminder_id!r}"
+        reminder = await get_reminder_service(
+            ctx.session, reminder_id=uid, user_id=ctx.user.telegram_id
+        )
+        if reminder is None:
+            return "error: reminder not found"
+        await delete_reminder_service(ctx.session, reminder)
+        return f"Deleted reminder: {reminder.title}."
+
+    delete_reminder_tool.name = "delete_reminder"
+
     tools: list[BaseTool] = [
         get_accounts,
         get_recent_transactions,
@@ -462,6 +568,9 @@ def build_tools(ctx: AgentContext) -> list[BaseTool]:
         create_savings_goal,
         add_to_savings_goal,
         get_user_stats,
+        create_reminder_tool,
+        get_reminders,
+        delete_reminder_tool,
     ]
 
     # Memory tools only make sense when embeddings are configured. Registering
@@ -527,8 +636,6 @@ def _match_account(accounts: list[Account], query: str) -> Account | None:
 
 def _category_name(categories: list[Category], category_id) -> str:
     """Best-effort lookup of a category's user-facing name from its id."""
-    import uuid as _uuid
-
     key = _uuid.UUID(str(category_id))
     for c in categories:
         if c.id == key:

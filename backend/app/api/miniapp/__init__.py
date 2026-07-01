@@ -12,6 +12,7 @@ from app.api.miniapp import (
     goals,
     me,
     onboarding,
+    reminders,
     transactions,
 )
 
@@ -24,6 +25,7 @@ router.include_router(categories.router)
 router.include_router(transactions.router)
 router.include_router(budgets.router)
 router.include_router(goals.router)
+router.include_router(reminders.router)
 router.include_router(gamification.router)
 router.include_router(dashboard.router)
 

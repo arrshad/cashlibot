@@ -127,5 +127,29 @@
   "stats.streak.budget_adherence": "Periods within budget",
   "stats.streak.savings_contribution": "Weeks saving",
   "stats.streak_best": "Best: {count}",
-  "stats.badges_title": "Badges"
+  "stats.badges_title": "Badges",
+
+  "dashboard.reminders_cta": "Reminders",
+
+  "reminder.list.title": "Reminders",
+  "reminder.list.empty": "Nothing scheduled. Set one and I'll ping you when it's time.",
+  "reminder.chip.done": "Done",
+  "reminder.frequency.none": "Once",
+  "reminder.frequency.daily": "Daily",
+  "reminder.frequency.weekly": "Weekly",
+  "reminder.frequency.monthly": "Monthly",
+  "reminder.frequency.yearly": "Yearly",
+  "reminder.type.transaction_log": "Log a tx",
+  "reminder.type.pay_someone": "Pay someone",
+  "reminder.type.bill_due": "Bill due",
+  "reminder.type.monthly_review": "Monthly review",
+  "reminder.type.custom": "Custom",
+  "reminder.add.title": "New reminder",
+  "reminder.add.title_label": "What's this about?",
+  "reminder.add.title_placeholder": "Pay rent, review budget, …",
+  "reminder.add.due_label": "When",
+  "reminder.add.type_label": "Type",
+  "reminder.add.repeat_label": "Repeat",
+  "reminder.add.description_label": "Note (optional)",
+  "reminder.add.submit": "Save"
 }
