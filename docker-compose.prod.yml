@@ -1,0 +1,64 @@
+# Prod overlay: routes api / admin / miniapp through Traefik on the host's
+# external `web` network. TLS is terminated by whatever sits in front of
+# Traefik (main nginx / Cloudflare), so we only publish the plain-HTTP
+# `web` entrypoint here.
+#
+# Usage on the server:
+#   docker network create web        # once, if it doesn't exist
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Requires PUBLIC_HOSTNAME in .env (e.g. cashlibot.example.com).
+
+name: cashlibot
+
+services:
+  api:
+    ports: !override []
+    networks:
+      - default
+      - web
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - "traefik.http.routers.cashlibot-api.rule=Host(`${PUBLIC_HOSTNAME}`) && PathPrefix(`/api`)"
+      - traefik.http.routers.cashlibot-api.entrypoints=web
+      - traefik.http.services.cashlibot-api.loadbalancer.server.port=8000
+      # Also expose /health on the same host for Traefik/uptime checks.
+      - "traefik.http.routers.cashlibot-health.rule=Host(`${PUBLIC_HOSTNAME}`) && Path(`/health`)"
+      - traefik.http.routers.cashlibot-health.entrypoints=web
+      - traefik.http.routers.cashlibot-health.service=cashlibot-api
+
+  admin:
+    ports: !override []
+    environment:
+      VITE_BASE: /admin/
+      VITE_API_BASE: ""
+    networks:
+      - default
+      - web
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - "traefik.http.routers.cashlibot-admin.rule=Host(`${PUBLIC_HOSTNAME}`) && PathPrefix(`/admin`)"
+      - traefik.http.routers.cashlibot-admin.entrypoints=web
+      - traefik.http.services.cashlibot-admin.loadbalancer.server.port=5174
+
+  miniapp:
+    ports: !override []
+    environment:
+      VITE_API_BASE: ""
+    networks:
+      - default
+      - web
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=web
+      # Catch-all for the host — priority=1 makes sure /api and /admin win.
+      - "traefik.http.routers.cashlibot-miniapp.rule=Host(`${PUBLIC_HOSTNAME}`)"
+      - traefik.http.routers.cashlibot-miniapp.entrypoints=web
+      - traefik.http.routers.cashlibot-miniapp.priority=1
+      - traefik.http.services.cashlibot-miniapp.loadbalancer.server.port=5173
+
+networks:
+  web:
+    external: true
