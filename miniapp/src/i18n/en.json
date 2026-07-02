@@ -198,5 +198,19 @@
   "recurring.add.category_label": "Category",
   "recurring.add.frequency_label": "How often",
   "recurring.add.next_due_label": "First due date",
-  "recurring.add.submit": "Save"
+  "recurring.add.submit": "Save",
+
+  "dashboard.friends_cta": "Friends",
+
+  "friends.title": "Friends",
+  "friends.section.accepted": "Your friends ({count})",
+  "friends.section.accepted_empty": "No friends yet. Add one by their @username.",
+  "friends.section.incoming": "Pending — waiting on you",
+  "friends.section.outgoing": "Pending — waiting on them",
+  "friends.badge.pending": "Awaiting reply",
+  "friends.action.accept": "Accept",
+  "friends.action.decline": "Decline",
+  "friends.add.username_label": "Their Telegram @username",
+  "friends.add.username_placeholder": "@somefriend",
+  "friends.add.submit": "Send request"
 }

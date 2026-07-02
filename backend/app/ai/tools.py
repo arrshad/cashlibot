@@ -36,6 +36,13 @@ from app.services.gamification_service import (
     list_streaks,
     on_savings_contribution,
 )
+from app.services.friend_service import (
+    FriendError,
+    counterpart_id,
+    list_friends,
+    list_pending_incoming,
+    send_request,
+)
 from app.services.recurring_service import (
     RecurringError,
     create_template as create_recurring_template,
@@ -646,6 +653,47 @@ def build_tools(ctx: AgentContext) -> list[BaseTool]:
             f"first due {template.next_due_date.isoformat()}."
         )
 
+    @tool
+    async def get_friends() -> str:
+        """List the user's Cashlibot friends + pending incoming requests as JSON."""
+        accepted = await list_friends(ctx.session, ctx.user.telegram_id)
+        incoming = await list_pending_incoming(ctx.session, ctx.user.telegram_id)
+
+        async def _snap(friendship, viewer):
+            peer_id = counterpart_id(friendship, viewer)
+            from app.models.user import User as _User
+
+            peer = await ctx.session.get(_User, peer_id)
+            return {
+                "id": str(friendship.id),
+                "peer_username": peer.username if peer else None,
+                "peer_name": peer.display_name if peer else str(peer_id),
+            }
+
+        payload = {
+            "friends": [
+                await _snap(f, ctx.user.telegram_id) for f in accepted
+            ],
+            "pending_incoming": [
+                await _snap(f, ctx.user.telegram_id) for f in incoming
+            ],
+        }
+        return json.dumps(payload)
+
+    @tool
+    async def add_friend(username: str) -> str:
+        """Send a Cashlibot friend request to a user by their @username.
+
+        The addressee gets a Telegram DM with accept/decline buttons.
+        """
+        try:
+            friendship = await send_request(
+                ctx.session, requester=ctx.user, addressee_username=username
+            )
+        except FriendError as exc:
+            return f"error: {exc}"
+        return f"Request sent (friendship id {friendship.id})."
+
     tools: list[BaseTool] = [
         get_accounts,
         get_recent_transactions,
@@ -662,6 +710,8 @@ def build_tools(ctx: AgentContext) -> list[BaseTool]:
         delete_reminder_tool,
         get_recurring,
         create_recurring,
+        get_friends,
+        add_friend,
     ]
 
     # Memory tools only make sense when embeddings are configured. Registering

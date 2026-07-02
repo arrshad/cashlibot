@@ -936,3 +936,25 @@ input, textarea {
 .history-row-reason { font-weight: 500; font-size: 14px; }
 .history-row-date { color: var(--text-tertiary); font-size: 12px; }
 .history-row-amount { font-weight: 700; font-size: 15px; }
+
+/* ----- Friends ----- */
+
+.friend-list { display: flex; flex-direction: column; gap: 8px; }
+
+.friend-row {
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.friend-row-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.friend-row-name { font-weight: 600; font-size: 14px; }
+.friend-row-handle { color: var(--text-tertiary); font-size: 12px; }
+
+.friend-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}

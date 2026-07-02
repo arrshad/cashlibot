@@ -106,6 +106,12 @@ export function Dashboard() {
           </button>
           <button
             className="btn btn-ghost"
+            onClick={() => go({ name: 'friends' })}
+          >
+            {t(lang, 'dashboard.friends_cta')}
+          </button>
+          <button
+            className="btn btn-ghost"
             onClick={() => go({ name: 'stats' })}
           >
             {t(lang, 'dashboard.stats_cta')}

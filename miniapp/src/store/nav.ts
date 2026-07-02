@@ -15,6 +15,7 @@ export type Route =
   | { name: 'add-reminder' }
   | { name: 'recurring' }
   | { name: 'add-recurring' }
+  | { name: 'friends' }
   | { name: 'settings' }
   | { name: 'credits' };
 
