@@ -224,6 +224,11 @@ node_modules/
 dist/
 .vite/
 *.tsbuildinfo
+# Lockfiles are deliberately not tracked — see the note in admin/miniapp
+# Dockerfiles and CI about the npm/cli#4828 optional-deps bug: a lockfile
+# resolved on one platform (usually darwin-arm64) skips the current-platform
+# rollup binary when installed elsewhere. Every install re-resolves fresh.
+package-lock.json
 
 # Local data volumes
 .docker-data/
