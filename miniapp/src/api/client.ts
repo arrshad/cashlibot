@@ -12,6 +12,8 @@ import type {
   CreditsStatus,
   GamificationStatus,
   InvoiceLink,
+  Friendship,
+  FriendsOverview,
   RecurringCreatePayload,
   RecurringTemplate,
   Reminder,
@@ -224,4 +226,24 @@ export async function createRecurring(
 
 export async function deleteRecurring(id: string): Promise<void> {
   await http.delete(`/api/recurring/${id}`);
+}
+
+export async function fetchFriends(): Promise<FriendsOverview> {
+  const { data } = await http.get<FriendsOverview>('/api/friends');
+  return data;
+}
+
+export async function sendFriendRequest(username: string): Promise<Friendship> {
+  const { data } = await http.post<Friendship>('/api/friends', { username });
+  return data;
+}
+
+export async function acceptFriend(id: string): Promise<Friendship> {
+  const { data } = await http.post<Friendship>(`/api/friends/${id}/accept`);
+  return data;
+}
+
+export async function declineFriend(id: string): Promise<Friendship> {
+  const { data } = await http.post<Friendship>(`/api/friends/${id}/decline`);
+  return data;
 }

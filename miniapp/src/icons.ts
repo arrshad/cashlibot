@@ -46,6 +46,7 @@ import {
   faTag,
   faTrashCan,
   faTrophy,
+  faUserPlus,
   faUtensils,
   faWallet,
   faWandMagicSparkles,
@@ -100,6 +101,7 @@ const REGISTRY: Record<string, IconDefinition> = {
   'fa-trophy': faTrophy,
   'fa-wand-magic-sparkles': faWandMagicSparkles,
   'fa-bolt': faBolt,
+  'fa-user-plus': faUserPlus,
 
   // Settings / credits
   'fa-gear': faGear,

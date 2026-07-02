@@ -50,6 +50,29 @@ credits:
   paid_duplicate: |
     این پرداخت قبلاً ثبت شده — تغییری تو موجودیت اعمال نشد.
 
+friends:
+  usage_addfriend: "این‌جوری استفاده کن: /addfriend @username."
+  error: "نشد — {reason}."
+  request_sent: "درخواستت برای {name} فرستاده شد. جواب بده خبرت می‌کنم."
+  incoming_request: |
+    {name} (@{username}) می‌خواد تو Cashlibot با تو دوست بشه.
+  button:
+    accept: "قبول"
+    decline: "رد"
+  answered:
+    accepted: "قبول شد"
+    declined: "رد شد"
+  followup:
+    accepted: "تو و {name} حالا با هم دوستید."
+    declined: "درخواست {name} رد شد."
+  requester_accepted: |
+    {name} درخواست دوستیت رو تو Cashlibot قبول کرد.
+  list_header: "دوست‌های تو ({count}):"
+  list_incoming_header: "منتظر پاسخ توئه:"
+  list_outgoing_header: "منتظر پاسخ اونان:"
+  list_empty: "هنوز تو Cashlibot دوستی نداری. از /addfriend @username استفاده کن."
+  gone: "این درخواست دیگه فعال نیست."
+
 chat:
   not_registered: "اول /start بزن تا ثبتت کنم."
   not_onboarded: "اول تنظیمات اولیه رو تموم کن — /start رو بزن و اپ رو باز کن."

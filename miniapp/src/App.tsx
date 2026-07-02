@@ -15,6 +15,7 @@ import { AddReminder } from '@/pages/reminders/AddReminder';
 import { ReminderList } from '@/pages/reminders/ReminderList';
 import { AddRecurring } from '@/pages/recurring/AddRecurring';
 import { RecurringList } from '@/pages/recurring/RecurringList';
+import { FriendList } from '@/pages/friends/FriendList';
 import { CreditsPage } from '@/pages/credits/CreditsPage';
 import { SettingsPage } from '@/pages/settings/SettingsPage';
 import { QuickAdd } from '@/pages/transactions/QuickAdd';
@@ -71,6 +72,8 @@ export default function App() {
       return <RecurringList />;
     case 'add-recurring':
       return <AddRecurring />;
+    case 'friends':
+      return <FriendList />;
     case 'settings':
       return <SettingsPage />;
     case 'credits':

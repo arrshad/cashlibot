@@ -329,3 +329,27 @@ export type CreditsStatus = {
   packages: CreditPackage[];
   history: CreditHistoryEntry[];
 };
+
+export type FriendshipStatus = 'pending' | 'accepted' | 'declined';
+export type FriendDirection = 'incoming' | 'outgoing' | 'mutual';
+
+export type FriendPeer = {
+  telegram_id: number;
+  username: string | null;
+  display_name: string;
+};
+
+export type Friendship = {
+  id: string;
+  status: FriendshipStatus;
+  peer: FriendPeer;
+  direction: FriendDirection;
+  created_at: string;
+  updated_at: string;
+};
+
+export type FriendsOverview = {
+  accepted: Friendship[];
+  incoming: Friendship[];
+  outgoing: Friendship[];
+};

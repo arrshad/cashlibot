@@ -50,6 +50,29 @@ credits:
   paid_duplicate: |
     Payment already processed — no change to your balance.
 
+friends:
+  usage_addfriend: "Use it like /addfriend @username."
+  error: "Couldn't do that — {reason}."
+  request_sent: "Request sent to {name}. I'll let you know when they answer."
+  incoming_request: |
+    {name} (@{username}) wants to add you as a friend on Cashlibot.
+  button:
+    accept: "Accept"
+    decline: "Decline"
+  answered:
+    accepted: "Accepted"
+    declined: "Declined"
+  followup:
+    accepted: "You and {name} are friends now."
+    declined: "Request from {name} declined."
+  requester_accepted: |
+    {name} accepted your friend request on Cashlibot.
+  list_header: "Your friends ({count}):"
+  list_incoming_header: "Pending — waiting on you:"
+  list_outgoing_header: "Pending — waiting on them:"
+  list_empty: "You don't have any friends on Cashlibot yet. Use /addfriend @username."
+  gone: "That request is gone."
+
 chat:
   not_registered: "Send /start first so I can register you."
   not_onboarded: "Finish setup first — tap /start to open the app."

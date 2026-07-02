@@ -198,5 +198,19 @@
   "recurring.add.category_label": "دسته",
   "recurring.add.frequency_label": "هر چند وقت",
   "recurring.add.next_due_label": "اولین موعد",
-  "recurring.add.submit": "ثبت"
+  "recurring.add.submit": "ثبت",
+
+  "dashboard.friends_cta": "دوست‌ها",
+
+  "friends.title": "دوست‌ها",
+  "friends.section.accepted": "دوست‌های تو ({count})",
+  "friends.section.accepted_empty": "هنوز دوستی نداری. با @username تلگرام یکی رو اضافه کن.",
+  "friends.section.incoming": "منتظر پاسخ توئه",
+  "friends.section.outgoing": "منتظر پاسخ اونان",
+  "friends.badge.pending": "منتظر پاسخ",
+  "friends.action.accept": "قبول",
+  "friends.action.decline": "رد",
+  "friends.add.username_label": "@username تلگرامشون",
+  "friends.add.username_placeholder": "@somefriend",
+  "friends.add.submit": "ارسال درخواست"
 }
