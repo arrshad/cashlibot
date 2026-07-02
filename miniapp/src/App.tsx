@@ -13,6 +13,8 @@ import { GoalList } from '@/pages/goals/GoalList';
 import { StatsPage } from '@/pages/gamification/StatsPage';
 import { AddReminder } from '@/pages/reminders/AddReminder';
 import { ReminderList } from '@/pages/reminders/ReminderList';
+import { AddRecurring } from '@/pages/recurring/AddRecurring';
+import { RecurringList } from '@/pages/recurring/RecurringList';
 import { CreditsPage } from '@/pages/credits/CreditsPage';
 import { SettingsPage } from '@/pages/settings/SettingsPage';
 import { QuickAdd } from '@/pages/transactions/QuickAdd';
@@ -65,6 +67,10 @@ export default function App() {
       return <ReminderList />;
     case 'add-reminder':
       return <AddReminder />;
+    case 'recurring':
+      return <RecurringList />;
+    case 'add-recurring':
+      return <AddRecurring />;
     case 'settings':
       return <SettingsPage />;
     case 'credits':

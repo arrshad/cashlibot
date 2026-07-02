@@ -23,6 +23,21 @@ gamification:
   level_up: |
     یه لِوِل بالا رفتی: {from_level} → {to_level}. الان {total_xp} امتیاز داری.
 
+recurring:
+  due_prompt: |
+    {description} امروز موعدشه ({amount} {currency}). ثبتش کنیم؟
+  button:
+    confirm: "ثبت کن"
+    skip: "بی‌خیال"
+  answered:
+    confirmed: "ثبت شد"
+    skipped: "رد شد"
+  followup:
+    confirmed: "ثبت شد. دفعه‌ی بعد که موعدش برسه دوباره خبرت می‌کنم."
+    skipped: "این‌بار رد شد. دفعه‌ی بعد که موعدش برسه دوباره خبرت می‌کنم."
+  gone: "این پیام دیگه فعال نیست."
+  already_resolved: "قبلاً به این جواب دادی."
+
 credits:
   balance_and_pick: |
     {balance} اعتبار داری. یه پکیج انتخاب کن تا شارژ بشی:

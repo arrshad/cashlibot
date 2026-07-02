@@ -23,6 +23,21 @@ gamification:
   level_up: |
     Level up: {from_level} → {to_level}. You're at {total_xp} XP.
 
+recurring:
+  due_prompt: |
+    {description} is due today ({amount} {currency}). Log it?
+  button:
+    confirm: "Log it"
+    skip: "Skip"
+  answered:
+    confirmed: "Logged"
+    skipped: "Skipped"
+  followup:
+    confirmed: "Logged. I'll ping you again next time it's due."
+    skipped: "Skipped this one. I'll ping you again next time it's due."
+  gone: "That prompt is gone."
+  already_resolved: "You've already answered this one."
+
 credits:
   balance_and_pick: |
     You have {balance} credits. Pick a package to top up:

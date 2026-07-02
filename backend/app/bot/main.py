@@ -12,10 +12,14 @@ from aiogram.enums import ParseMode
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
-from app.bot.routers import chat, payments, preview, start
+from app.bot.routers import chat, payments, preview, recurring, start
 from app.core.bootstrap import load_app_context
 from app.core.config import get_settings
 from app.core.logging import configure_logging
+from app.scheduler.recurring import (
+    TICK_INTERVAL_SECONDS as RECURRING_TICK_SECONDS,
+    tick_recurring,
+)
 from app.scheduler.reminders import TICK_INTERVAL_SECONDS, tick_reminders
 
 log = logging.getLogger(__name__)
@@ -47,6 +51,7 @@ async def run() -> int:
     dp.include_router(start.router)
     dp.include_router(payments.router)
     dp.include_router(preview.router)
+    dp.include_router(recurring.router)
     dp.include_router(chat.router)
 
     me = await bot.get_me()
@@ -65,8 +70,21 @@ async def run() -> int:
         max_instances=1,
         replace_existing=True,
     )
+    scheduler.add_job(
+        tick_recurring,
+        IntervalTrigger(seconds=RECURRING_TICK_SECONDS),
+        args=[bot],
+        id="recurring_tick",
+        coalesce=True,
+        max_instances=1,
+        replace_existing=True,
+    )
     scheduler.start()
-    log.info("scheduler started (reminder tick every %ds)", TICK_INTERVAL_SECONDS)
+    log.info(
+        "scheduler started (reminders every %ds, recurring every %ds)",
+        TICK_INTERVAL_SECONDS,
+        RECURRING_TICK_SECONDS,
+    )
 
     try:
         await dp.start_polling(bot)

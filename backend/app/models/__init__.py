@@ -16,6 +16,11 @@ from app.models.gamification import (
     UserXP,
 )
 from app.models.memory import EMBEDDING_DIM, MemoryType, UserMemory
+from app.models.recurring import (
+    OccurrenceStatus,
+    RecurringOccurrence,
+    RecurringTemplate,
+)
 from app.models.reminder import Reminder, ReminderType
 from app.models.savings_goal import SavingsGoal
 from app.models.stars_purchase import StarsPurchase
@@ -36,6 +41,9 @@ __all__ = [
     "EMBEDDING_DIM",
     "Frequency",
     "MemoryType",
+    "OccurrenceStatus",
+    "RecurringOccurrence",
+    "RecurringTemplate",
     "Reminder",
     "ReminderType",
     "SavingsGoal",

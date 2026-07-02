@@ -12,6 +12,8 @@ import type {
   CreditsStatus,
   GamificationStatus,
   InvoiceLink,
+  RecurringCreatePayload,
+  RecurringTemplate,
   Reminder,
   ReminderCreatePayload,
   SavingsGoal,
@@ -206,4 +208,20 @@ export async function createReminder(
 
 export async function deleteReminder(id: string): Promise<void> {
   await http.delete(`/api/reminders/${id}`);
+}
+
+export async function fetchRecurring(): Promise<RecurringTemplate[]> {
+  const { data } = await http.get<RecurringTemplate[]>('/api/recurring');
+  return data;
+}
+
+export async function createRecurring(
+  payload: RecurringCreatePayload,
+): Promise<RecurringTemplate> {
+  const { data } = await http.post<RecurringTemplate>('/api/recurring', payload);
+  return data;
+}
+
+export async function deleteRecurring(id: string): Promise<void> {
+  await http.delete(`/api/recurring/${id}`);
 }

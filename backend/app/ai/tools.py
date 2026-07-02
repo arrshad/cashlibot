@@ -36,6 +36,11 @@ from app.services.gamification_service import (
     list_streaks,
     on_savings_contribution,
 )
+from app.services.recurring_service import (
+    RecurringError,
+    create_template as create_recurring_template,
+    list_templates as list_recurring_templates,
+)
 from app.services.reminder_service import (
     ReminderError,
     create_reminder,
@@ -557,6 +562,90 @@ def build_tools(ctx: AgentContext) -> list[BaseTool]:
 
     delete_reminder_tool.name = "delete_reminder"
 
+    @tool
+    async def get_recurring() -> str:
+        """List the user's active recurring transaction templates as JSON."""
+        rows = await list_recurring_templates(ctx.session, ctx.user.telegram_id)
+        return json.dumps(
+            [
+                {
+                    "id": str(r.id),
+                    "description": r.description,
+                    "amount": str(r.amount),
+                    "currency": r.currency,
+                    "frequency": r.frequency.value,
+                    "next_due_date": r.next_due_date.isoformat(),
+                }
+                for r in rows
+            ]
+        )
+
+    @tool
+    async def create_recurring(
+        description: str,
+        amount: str,
+        account: str,
+        category: str,
+        frequency: str,
+        next_due_date_iso: str,
+    ) -> str:
+        """Set up a recurring transaction template.
+
+        Args:
+            description: label the user will see on the confirmation prompt
+                (e.g. "Netflix", "Rent").
+            amount: decimal amount as string.
+            account: name of the account it debits/credits.
+            category: category name.
+            frequency: daily | weekly | monthly | yearly.
+            next_due_date_iso: ISO date (YYYY-MM-DD) for the first firing.
+        """
+        from datetime import date as _date
+
+        try:
+            decimal_amount = Decimal(amount.strip())
+        except (InvalidOperation, AttributeError):
+            return f"error: amount {amount!r} isn't a valid decimal"
+        try:
+            freq = Frequency(frequency.strip().lower())
+        except ValueError:
+            return "error: frequency must be daily / weekly / monthly / yearly"
+        try:
+            first_due = _date.fromisoformat(next_due_date_iso.strip())
+        except ValueError:
+            return "error: next_due_date_iso must be YYYY-MM-DD"
+
+        matched_account = _match_account(ctx.accounts, account)
+        if matched_account is None:
+            return f"error: no account matches {account!r}"
+
+        # Try expense first, then income; the recurring service pulls the tx
+        # type from the category itself so either works.
+        cat_hit = _match_category(ctx.categories, category, "expense")
+        if cat_hit is None:
+            cat_hit = _match_category(ctx.categories, category, "income")
+        if cat_hit is None:
+            return f"error: no category matches {category!r}"
+
+        try:
+            template = await create_recurring_template(
+                ctx.session,
+                user_id=ctx.user.telegram_id,
+                account_id=matched_account.id,
+                category_id=cat_hit.id,
+                amount=decimal_amount,
+                description=description,
+                frequency=freq,
+                next_due_date=first_due,
+            )
+        except RecurringError as exc:
+            return f"error: {exc}"
+        return (
+            f"Recurring set: {template.description} — "
+            f"{template.amount} {template.currency} {template.frequency.value}, "
+            f"first due {template.next_due_date.isoformat()}."
+        )
+
     tools: list[BaseTool] = [
         get_accounts,
         get_recent_transactions,
@@ -571,6 +660,8 @@ def build_tools(ctx: AgentContext) -> list[BaseTool]:
         create_reminder_tool,
         get_reminders,
         delete_reminder_tool,
+        get_recurring,
+        create_recurring,
     ]
 
     # Memory tools only make sense when embeddings are configured. Registering

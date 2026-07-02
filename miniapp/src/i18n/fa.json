@@ -179,5 +179,24 @@
   "credits.reason.friend_bonus": "هدیه‌ی دوست",
   "credits.reason.stars_purchase": "خرید با استار",
   "credits.reason.ai_usage": "مصرف هوش مصنوعی",
-  "credits.reason.admin_adjustment": "اصلاح ادمین"
+  "credits.reason.admin_adjustment": "اصلاح ادمین",
+
+  "dashboard.recurring_cta": "تکراری‌ها",
+
+  "recurring.list.title": "تراکنش‌های تکراری",
+  "recurring.list.empty": "هنوز تکراری‌ای نداری. قبض، حقوق، اجاره — یه‌بار تنظیم کن، خودم سر موعد خبرت می‌کنم.",
+  "recurring.next_due": "موعد بعدی",
+  "recurring.frequency.daily": "روزانه",
+  "recurring.frequency.weekly": "هفتگی",
+  "recurring.frequency.monthly": "ماهانه",
+  "recurring.frequency.yearly": "سالانه",
+  "recurring.add.title": "تکراری جدید",
+  "recurring.add.description_label": "برای چیه؟",
+  "recurring.add.description_placeholder": "نتفلیکس، اجاره، حقوق، …",
+  "recurring.add.amount_label": "مبلغ",
+  "recurring.add.account_label": "حساب",
+  "recurring.add.category_label": "دسته",
+  "recurring.add.frequency_label": "هر چند وقت",
+  "recurring.add.next_due_label": "اولین موعد",
+  "recurring.add.submit": "ثبت"
 }
