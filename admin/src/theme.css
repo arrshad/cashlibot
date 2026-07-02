@@ -1,0 +1,270 @@
+:root {
+  --bg-base: #090910;
+  --bg-glass: rgba(255, 255, 255, 0.055);
+  --bg-glass-strong: rgba(255, 255, 255, 0.09);
+  --bg-glass-border: rgba(255, 255, 255, 0.10);
+  --bg-surface: rgba(255, 255, 255, 0.04);
+
+  --accent-primary: #7c6ef5;
+  --accent-primary-dim: rgba(124, 110, 245, 0.18);
+  --accent-secondary: #3ecfb2;
+  --accent-danger: #f0606a;
+  --accent-success: #4ccc88;
+  --accent-warning: #f5a623;
+
+  --text-primary: rgba(255, 255, 255, 0.92);
+  --text-secondary: rgba(255, 255, 255, 0.58);
+  --text-tertiary: rgba(255, 255, 255, 0.32);
+
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --font-latin: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root { height: 100%; margin: 0; }
+
+body {
+  background: var(--bg-base);
+  background-image:
+    radial-gradient(at 15% -10%, rgba(124, 110, 245, 0.18), transparent 55%),
+    radial-gradient(at 90% 110%, rgba(62, 207, 178, 0.08), transparent 55%);
+  color: var(--text-primary);
+  font-family: var(--font-latin);
+  -webkit-font-smoothing: antialiased;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: inherit;
+}
+input, textarea, select { font: inherit; color: inherit; }
+
+.shell {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 32px 40px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.topbar nav {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-glass-border);
+  border-radius: 999px;
+}
+
+.topbar nav button {
+  padding: 8px 16px;
+  border-radius: 999px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: background 150ms, color 150ms;
+}
+.topbar nav button.active {
+  background: var(--accent-primary);
+  color: #fff;
+}
+.topbar nav button:not(.active):hover {
+  color: var(--text-primary);
+  background: var(--bg-glass-strong);
+}
+
+.topbar .spacer { flex: 1; }
+
+.btn-ghost {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--bg-glass);
+  border: 1px solid var(--bg-glass-border);
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: background 150ms;
+}
+.btn-ghost:hover { background: var(--bg-glass-strong); color: var(--text-primary); }
+
+.card {
+  background: var(--bg-glass);
+  border: 1px solid var(--bg-glass-border);
+  border-radius: var(--radius-lg);
+  padding: 20px 22px;
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+}
+
+.card + .card, .card + section { margin-top: 16px; }
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 720px) {
+  .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.kpi {
+  padding: 18px 20px;
+}
+.kpi-label {
+  color: var(--text-secondary);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.kpi-value {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-top: 4px;
+}
+.kpi-hint { color: var(--text-tertiary); font-size: 12px; margin-top: 4px; }
+
+.stack { display: flex; flex-direction: column; gap: 12px; }
+
+.search {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.search input {
+  flex: 1;
+  padding: 10px 14px;
+  background: var(--bg-glass);
+  border: 1px solid var(--bg-glass-border);
+  border-radius: var(--radius-md);
+  outline: none;
+}
+.search input:focus { border-color: var(--accent-primary); background: var(--bg-glass-strong); }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+th, td {
+  text-align: left;
+  padding: 10px 12px;
+}
+thead th {
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 11px;
+  border-bottom: 1px solid var(--bg-glass-border);
+}
+tbody tr {
+  border-bottom: 1px solid var(--bg-glass-border);
+  cursor: pointer;
+  transition: background 150ms;
+}
+tbody tr:hover { background: var(--bg-glass-strong); }
+tbody tr:last-child { border-bottom: none; }
+
+.chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--accent-primary-dim);
+  color: var(--accent-primary);
+}
+.chip-admin { background: rgba(245, 166, 35, 0.15); color: var(--accent-warning); }
+.chip-off { background: var(--bg-surface); color: var(--text-tertiary); }
+
+.numeric { font-variant-numeric: tabular-nums; text-align: right; }
+
+.error {
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  background: rgba(240, 96, 106, 0.12);
+  border: 1px solid rgba(240, 96, 106, 0.35);
+  color: var(--accent-danger);
+}
+
+.login {
+  max-width: 460px;
+  margin: 10vh auto 0;
+  padding: 32px;
+}
+.login h1 { margin: 0 0 12px; font-size: 24px; }
+.login p { color: var(--text-secondary); line-height: 1.6; }
+.login code {
+  background: var(--bg-surface);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', 'Menlo', monospace;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 4px 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.pagination button {
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: var(--bg-glass);
+  border: 1px solid var(--bg-glass-border);
+  color: var(--text-primary);
+}
+.pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.detail-back {
+  color: var(--accent-primary);
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.adjust-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.adjust-form input {
+  padding: 8px 12px;
+  background: var(--bg-glass);
+  border: 1px solid var(--bg-glass-border);
+  border-radius: 10px;
+  outline: none;
+  width: 140px;
+}
+.adjust-form input:focus { border-color: var(--accent-primary); }
+.adjust-form button {
+  padding: 8px 16px;
+  border-radius: 10px;
+  background: var(--accent-primary);
+  color: #fff;
+  font-weight: 600;
+  border: none;
+}
+.adjust-form button:disabled { opacity: 0.5; cursor: not-allowed; }

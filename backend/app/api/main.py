@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
+from app.api.admin import router as admin_router
 from app.api.miniapp import router as miniapp_router
 from app.core.bootstrap import load_app_context
 from app.core.config import get_settings
@@ -31,7 +32,7 @@ app = FastAPI(title="Cashlibot API", version="0.1.0", lifespan=lifespan)
 # (whatever MINIAPP_URL points at). We allow both — Telegram WebApp passes
 # initData in the Authorization header, so credentials aren't relied upon here.
 _settings = get_settings()
-_allowed_origins: list[str] = ["http://localhost:5173"]
+_allowed_origins: list[str] = ["http://localhost:5173", "http://localhost:5174"]
 if _settings.miniapp_url:
     _allowed_origins.append(_settings.miniapp_url.rstrip("/"))
 
@@ -43,6 +44,7 @@ app.add_middleware(
 )
 
 app.include_router(miniapp_router)
+app.include_router(admin_router)
 
 
 @app.get("/health")

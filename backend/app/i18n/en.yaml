@@ -107,6 +107,18 @@ chat:
     expired: "That preview expired. Send it again."
     failed: "Couldn't save that one."
 
+admin:
+  not_available: "Command not available."
+  jwt_secret_missing: |
+    Admin sign-in is misconfigured — ADMIN_JWT_SECRET isn't set.
+    Ask whoever runs the server to set it and restart the bot.
+  link_ready: |
+    Admin console link (valid 24h):
+
+    {link}
+
+    Open it on the same device you want to log in from.
+
 common:
   open_app: "Open the app"
   setup: "Set up"
