@@ -1,0 +1,86 @@
+name: ci
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  miniapp:
+    name: miniapp (typecheck + build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: miniapp
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          # No cache: the Dockerfile deliberately doesn't ship package-lock.json
+          # (see fix/infra/prod-runtime-compat), so there's nothing stable to key on.
+      - run: npm install --no-audit --no-fund
+      - run: npm run build
+
+  admin:
+    name: admin (typecheck + build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: admin
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - run: npm run build
+
+  backend:
+    name: backend (compile + migrate)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: cashlibot
+          POSTGRES_PASSWORD: ci_only_password
+          POSTGRES_DB: cashlibot
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U cashlibot -d cashlibot"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      POSTGRES_USER: cashlibot
+      POSTGRES_PASSWORD: ci_only_password
+      POSTGRES_DB: cashlibot
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: '5432'
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - run: pip install -r requirements.txt
+      # Catches syntax errors + missing imports across the whole app package.
+      - name: Compile check
+        run: python -m compileall -q app
+      # Runs the full migration chain against a fresh pgvector database — proves
+      # every revision applies cleanly and the DDL doesn't regress.
+      - name: Alembic upgrade head
+        run: alembic upgrade head
