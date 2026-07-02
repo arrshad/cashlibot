@@ -175,6 +175,11 @@
   "settings.digest.day.fri": "جمعه",
   "settings.digest.day.sat": "شنبه",
   "settings.digest.day.sun": "یکشنبه",
+  "settings.export.title": "خروجی داده‌ها",
+  "settings.export.subtitle": "یه کپی کامل — حساب‌ها، تراکنش‌ها، بودجه‌ها، هدف‌ها، تاریخچه‌ی اعتبار.",
+  "settings.export.download_json": "دانلود JSON",
+  "settings.export.download_csv": "تراکنش‌ها (CSV)",
+  "settings.export.failed": "نشد. یه بار دیگه امتحان کن.",
 
   "credits.title": "اعتبار",
   "credits.balance_label": "موجودی",
