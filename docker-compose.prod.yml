@@ -1,15 +1,20 @@
 # Prod overlay: routes api / admin / miniapp through Traefik on the host's
-# external `web` network. TLS is terminated by whatever sits in front of
-# Traefik (main nginx / Cloudflare), so we only publish the plain-HTTP
-# `web` entrypoint here.
+# external `web` network. Traefik terminates TLS via its own ACME resolver.
 #
 # Usage on the server:
 #   docker network create web        # once, if it doesn't exist
 #   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 #
-# Requires PUBLIC_HOSTNAME in .env (e.g. cashlibot.example.com).
+# Required in .env:
+#   PUBLIC_HOSTNAME=cashlibot.example.com
+#   # optional; matches the resolver name configured in your Traefik static config.
+#   TRAEFIK_CERT_RESOLVER=letsencrypt
 
 name: cashlibot
+
+x-traefik-common: &traefik-common
+  traefik.enable: "true"
+  traefik.docker.network: web
 
 services:
   api:
@@ -18,15 +23,19 @@ services:
       - default
       - web
     labels:
-      - traefik.enable=true
-      - traefik.docker.network=web
-      - "traefik.http.routers.cashlibot-api.rule=Host(`${PUBLIC_HOSTNAME}`) && PathPrefix(`/api`)"
-      - traefik.http.routers.cashlibot-api.entrypoints=web
-      - traefik.http.services.cashlibot-api.loadbalancer.server.port=8000
-      # Also expose /health on the same host for Traefik/uptime checks.
-      - "traefik.http.routers.cashlibot-health.rule=Host(`${PUBLIC_HOSTNAME}`) && Path(`/health`)"
-      - traefik.http.routers.cashlibot-health.entrypoints=web
-      - traefik.http.routers.cashlibot-health.service=cashlibot-api
+      <<: *traefik-common
+      # HTTPS router — TLS via the ACME resolver named in TRAEFIK_CERT_RESOLVER.
+      traefik.http.routers.cashlibot-api.rule: "Host(`${PUBLIC_HOSTNAME}`) && PathPrefix(`/api`)"
+      traefik.http.routers.cashlibot-api.entrypoints: websecure
+      traefik.http.routers.cashlibot-api.tls: "true"
+      traefik.http.routers.cashlibot-api.tls.certresolver: "${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      traefik.http.services.cashlibot-api.loadbalancer.server.port: "8000"
+      # /health for uptime pings — same service, same TLS.
+      traefik.http.routers.cashlibot-health.rule: "Host(`${PUBLIC_HOSTNAME}`) && Path(`/health`)"
+      traefik.http.routers.cashlibot-health.entrypoints: websecure
+      traefik.http.routers.cashlibot-health.tls: "true"
+      traefik.http.routers.cashlibot-health.tls.certresolver: "${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      traefik.http.routers.cashlibot-health.service: cashlibot-api
 
   admin:
     ports: !override []
@@ -37,11 +46,12 @@ services:
       - default
       - web
     labels:
-      - traefik.enable=true
-      - traefik.docker.network=web
-      - "traefik.http.routers.cashlibot-admin.rule=Host(`${PUBLIC_HOSTNAME}`) && PathPrefix(`/admin`)"
-      - traefik.http.routers.cashlibot-admin.entrypoints=web
-      - traefik.http.services.cashlibot-admin.loadbalancer.server.port=5174
+      <<: *traefik-common
+      traefik.http.routers.cashlibot-admin.rule: "Host(`${PUBLIC_HOSTNAME}`) && PathPrefix(`/admin`)"
+      traefik.http.routers.cashlibot-admin.entrypoints: websecure
+      traefik.http.routers.cashlibot-admin.tls: "true"
+      traefik.http.routers.cashlibot-admin.tls.certresolver: "${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      traefik.http.services.cashlibot-admin.loadbalancer.server.port: "5174"
 
   miniapp:
     ports: !override []
@@ -51,13 +61,21 @@ services:
       - default
       - web
     labels:
-      - traefik.enable=true
-      - traefik.docker.network=web
-      # Catch-all for the host — priority=1 makes sure /api and /admin win.
-      - "traefik.http.routers.cashlibot-miniapp.rule=Host(`${PUBLIC_HOSTNAME}`)"
-      - traefik.http.routers.cashlibot-miniapp.entrypoints=web
-      - traefik.http.routers.cashlibot-miniapp.priority=1
-      - traefik.http.services.cashlibot-miniapp.loadbalancer.server.port=5173
+      <<: *traefik-common
+      # HTTPS catch-all — priority=1 so /api and /admin routers win.
+      traefik.http.routers.cashlibot-miniapp.rule: "Host(`${PUBLIC_HOSTNAME}`)"
+      traefik.http.routers.cashlibot-miniapp.entrypoints: websecure
+      traefik.http.routers.cashlibot-miniapp.tls: "true"
+      traefik.http.routers.cashlibot-miniapp.tls.certresolver: "${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      traefik.http.routers.cashlibot-miniapp.priority: "1"
+      traefik.http.services.cashlibot-miniapp.loadbalancer.server.port: "5173"
+      # HTTP catch-all → 301 to HTTPS. One router covers /api, /admin and /
+      # because all three live under the same host.
+      traefik.http.middlewares.cashlibot-https.redirectscheme.scheme: https
+      traefik.http.middlewares.cashlibot-https.redirectscheme.permanent: "true"
+      traefik.http.routers.cashlibot-http.rule: "Host(`${PUBLIC_HOSTNAME}`)"
+      traefik.http.routers.cashlibot-http.entrypoints: web
+      traefik.http.routers.cashlibot-http.middlewares: cashlibot-https@docker
 
 networks:
   web:
