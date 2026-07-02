@@ -18,5 +18,7 @@ export default defineConfig({
       usePolling: true,
       interval: 250,
     },
+    // Trust the proxy in front (Traefik → external nginx / Cloudflare).
+    allowedHosts: true,
   },
 });
