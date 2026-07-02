@@ -241,5 +241,30 @@
   "shared.split_status.pending_approval": "منتظر تأیید",
   "shared.split_status.approved": "تأیید شده",
   "shared.split_status.disputed": "معترض",
-  "shared.split_status.settled": "تسویه شده"
+  "shared.split_status.settled": "تسویه شده",
+
+  "dashboard.reports_cta": "گزارش‌ها",
+
+  "reports.title": "گزارش‌ها",
+  "reports.period.week": "هفته",
+  "reports.period.month": "ماه",
+  "reports.period.quarter": "فصل",
+  "reports.period.year": "سال",
+  "reports.behavior.title": "امتیاز رفتاری",
+  "reports.behavior.logging": "پایداری ثبت",
+  "reports.behavior.budget": "پایبندی به بودجه",
+  "reports.behavior.savings": "نرخ پس‌انداز",
+  "reports.behavior.debt_free": "بدون بدهی",
+  "reports.behavior.goal": "پیشرفت هدف",
+  "reports.monthly.title": "این ماه",
+  "reports.monthly.this_month": "هزینه‌ی این ماه",
+  "reports.monthly.last_month": "هزینه‌ی ماه قبل",
+  "reports.monthly.change": "تغییر",
+  "reports.monthly.savings_rate": "نرخ پس‌انداز (۳۰ روز)",
+  "reports.by_category.title": "بر اساس دسته",
+  "reports.by_category.empty": "یه‌کم هزینه ثبت کن تا تفکیک ببینی.",
+  "reports.trend.title": "روند ۶ ماه اخیر",
+  "reports.trend.income": "درآمد",
+  "reports.trend.expense": "هزینه",
+  "reports.trend.empty": "هنوز داده‌ی کافی نیست."
 }

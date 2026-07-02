@@ -241,5 +241,30 @@
   "shared.split_status.pending_approval": "Pending",
   "shared.split_status.approved": "Approved",
   "shared.split_status.disputed": "Disputed",
-  "shared.split_status.settled": "Settled"
+  "shared.split_status.settled": "Settled",
+
+  "dashboard.reports_cta": "Reports",
+
+  "reports.title": "Reports",
+  "reports.period.week": "Week",
+  "reports.period.month": "Month",
+  "reports.period.quarter": "Quarter",
+  "reports.period.year": "Year",
+  "reports.behavior.title": "Behavior score",
+  "reports.behavior.logging": "Logging consistency",
+  "reports.behavior.budget": "Budget adherence",
+  "reports.behavior.savings": "Savings rate",
+  "reports.behavior.debt_free": "Debt-free",
+  "reports.behavior.goal": "Goal progress",
+  "reports.monthly.title": "This month",
+  "reports.monthly.this_month": "Spent this month",
+  "reports.monthly.last_month": "Spent last month",
+  "reports.monthly.change": "Change",
+  "reports.monthly.savings_rate": "Savings rate (last 30d)",
+  "reports.by_category.title": "By category",
+  "reports.by_category.empty": "Log some expenses to see a breakdown.",
+  "reports.trend.title": "6-month trend",
+  "reports.trend.income": "Income",
+  "reports.trend.expense": "Expense",
+  "reports.trend.empty": "Not enough history yet."
 }

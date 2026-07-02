@@ -18,6 +18,7 @@ export type Route =
   | { name: 'friends' }
   | { name: 'friend-detail'; friendId: number }
   | { name: 'add-shared-expense'; friendId?: number }
+  | { name: 'reports' }
   | { name: 'settings' }
   | { name: 'credits' };
 

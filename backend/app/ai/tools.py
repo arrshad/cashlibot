@@ -36,6 +36,12 @@ from app.services.gamification_service import (
     list_streaks,
     on_savings_contribution,
 )
+from app.services.analytics_service import (
+    bounds_for_period,
+    compute_behavior_score,
+    get_monthly_comparison as analytics_monthly_comparison,
+    get_spending_by_category,
+)
 from app.services.friend_service import (
     FriendError,
     counterpart_id,
@@ -694,6 +700,77 @@ def build_tools(ctx: AgentContext) -> list[BaseTool]:
             return f"error: {exc}"
         return f"Request sent (friendship id {friendship.id})."
 
+    @tool
+    async def get_behavior_score() -> str:
+        """Return the user's behavior score (0-100) with per-component breakdown."""
+        score = await compute_behavior_score(
+            ctx.session, user_id=ctx.user.telegram_id, tz_name=ctx.user.timezone
+        )
+        return json.dumps(
+            {
+                "total": score.total,
+                "components": {
+                    "logging_consistency": score.logging_consistency,
+                    "budget_adherence": score.budget_adherence,
+                    "savings_rate": score.savings_rate,
+                    "debt_free": score.debt_free,
+                    "goal_progress": score.goal_progress,
+                },
+            }
+        )
+
+    @tool
+    async def get_spending_report(period: str = "month", limit: int = 10) -> str:
+        """Category breakdown of expenses for a period.
+
+        Args:
+            period: week | month | quarter | year (defaults to month).
+            limit: max categories to return, defaults to 10.
+        """
+        try:
+            start, end = bounds_for_period(period, ctx.user.timezone)
+        except ValueError as exc:
+            return f"error: {exc}"
+        rows = await get_spending_by_category(
+            ctx.session,
+            user_id=ctx.user.telegram_id,
+            start=start,
+            end=end,
+            limit=limit,
+        )
+        payload = {
+            "period": period,
+            "start": start.isoformat(),
+            "end": end.isoformat(),
+            "categories": [
+                {
+                    "name": r.name,
+                    "amount": str(r.amount),
+                    "currency": r.currency,
+                }
+                for r in rows
+            ],
+        }
+        return json.dumps(payload)
+
+    @tool
+    async def get_monthly_comparison() -> str:
+        """Compare this month's total expenses to last month's (in the user's default currency)."""
+        result = await analytics_monthly_comparison(
+            ctx.session,
+            user_id=ctx.user.telegram_id,
+            tz_name=ctx.user.timezone,
+            currency=ctx.user.default_currency,
+        )
+        return json.dumps(
+            {
+                "this_month_expense": str(result.this_month_expense),
+                "last_month_expense": str(result.last_month_expense),
+                "delta_pct": result.delta_pct,
+                "currency": result.currency,
+            }
+        )
+
     tools: list[BaseTool] = [
         get_accounts,
         get_recent_transactions,
@@ -712,6 +789,9 @@ def build_tools(ctx: AgentContext) -> list[BaseTool]:
         create_recurring,
         get_friends,
         add_friend,
+        get_behavior_score,
+        get_spending_report,
+        get_monthly_comparison,
     ]
 
     # Memory tools only make sense when embeddings are configured. Registering
