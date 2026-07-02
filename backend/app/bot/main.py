@@ -13,6 +13,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
 from app.bot.routers import (
+    admin,
     chat,
     friends,
     payments,
@@ -57,6 +58,7 @@ async def run() -> int:
     # Order matters: command + callback handlers first, then the free-text
     # catch-all last so commands don't fall through into the AI.
     dp.include_router(start.router)
+    dp.include_router(admin.router)
     dp.include_router(payments.router)
     dp.include_router(friends.router)
     dp.include_router(shared_expenses.router)

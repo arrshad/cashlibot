@@ -46,6 +46,7 @@ class Settings(BaseSettings):
 
     # Frontend URLs
     miniapp_url: str = ""
+    admin_url: str = ""
 
     # Migration toggle for entrypoint scripts
     run_migrations: bool = Field(default=False)
