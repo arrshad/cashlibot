@@ -73,6 +73,23 @@ friends:
   list_empty: "You don't have any friends on Cashlibot yet. Use /addfriend @username."
   gone: "That request is gone."
 
+shared_expense:
+  incoming_split: |
+    {creator_name} logged a shared expense: {description} — your share is {amount} {currency}.
+  button:
+    approve: "Approve"
+    dispute: "Dispute"
+  answered:
+    approved: "Approved"
+    disputed: "Disputed"
+  followup:
+    approved: "You approved the {description} split."
+    disputed: "You disputed the {description} split. I let the creator know."
+  creator_disputed: |
+    {friend_name} disputed their share of "{description}". You may want to sort it out with them.
+  gone: "That split is gone."
+  action_failed: "Couldn't do that."
+
 chat:
   not_registered: "Send /start first so I can register you."
   not_onboarded: "Finish setup first — tap /start to open the app."

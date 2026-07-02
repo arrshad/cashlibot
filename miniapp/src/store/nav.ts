@@ -16,6 +16,8 @@ export type Route =
   | { name: 'recurring' }
   | { name: 'add-recurring' }
   | { name: 'friends' }
+  | { name: 'friend-detail'; friendId: number }
+  | { name: 'add-shared-expense'; friendId?: number }
   | { name: 'settings' }
   | { name: 'credits' };
 

@@ -958,3 +958,47 @@ input, textarea {
   align-items: center;
   gap: 6px;
 }
+
+/* ----- Friend detail + shared expenses ----- */
+
+.friend-row-clickable {
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease);
+}
+.friend-row-clickable:hover { background: var(--bg-glass-strong); }
+
+.friend-detail-actions {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 8px;
+}
+
+.balance-card {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.balance-list { display: flex; flex-direction: column; gap: 6px; }
+
+.balance-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.balance-row-amount { font-size: 20px; font-weight: 700; }
+
+.split-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.split-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.split-input-name { flex: 1; font-size: 14px; }
+.split-input-row .input { width: 120px; }
