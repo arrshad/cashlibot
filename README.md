@@ -130,4 +130,8 @@ admin/      React + Vite admin dashboard
 - Short-lived feature branches, `feat/<scope>/<description>` or
   `fix/<scope>/<description>`.
 - Conventional Commits (`feat`, `fix`, `refactor`, `docs`, `chore`).
-- Every branch merged via Pull Request. CI is not wired up yet.
+- Every branch merged via Pull Request.
+- CI runs on every PR + push to `master` (`.github/workflows/ci.yml`):
+  - **miniapp** and **admin** — TypeScript typecheck + `vite build`.
+  - **backend** — `python -m compileall` + `alembic upgrade head` against a
+    fresh `pgvector/pgvector:pg16` service, so every migration is exercised.
