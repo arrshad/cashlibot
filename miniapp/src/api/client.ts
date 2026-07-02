@@ -12,9 +12,14 @@ import type {
   CreditsStatus,
   GamificationStatus,
   InvoiceLink,
+  FriendBalance,
   Friendship,
   FriendsOverview,
   RecurringCreatePayload,
+  SharedExpense,
+  SharedExpenseCreatePayload,
+  SharedExpenseSplit,
+  SharedExpensesOverview,
   RecurringTemplate,
   Reminder,
   ReminderCreatePayload,
@@ -245,5 +250,47 @@ export async function acceptFriend(id: string): Promise<Friendship> {
 
 export async function declineFriend(id: string): Promise<Friendship> {
   const { data } = await http.post<Friendship>(`/api/friends/${id}/decline`);
+  return data;
+}
+
+export async function fetchSharedExpenses(): Promise<SharedExpensesOverview> {
+  const { data } = await http.get<SharedExpensesOverview>('/api/shared-expenses');
+  return data;
+}
+
+export async function createSharedExpense(
+  payload: SharedExpenseCreatePayload,
+): Promise<SharedExpense> {
+  const { data } = await http.post<SharedExpense>('/api/shared-expenses', payload);
+  return data;
+}
+
+export async function approveSplit(splitId: string): Promise<SharedExpenseSplit> {
+  const { data } = await http.post<SharedExpenseSplit>(
+    `/api/shared-expenses/splits/${splitId}/approve`,
+  );
+  return data;
+}
+
+export async function disputeSplit(splitId: string): Promise<SharedExpenseSplit> {
+  const { data } = await http.post<SharedExpenseSplit>(
+    `/api/shared-expenses/splits/${splitId}/dispute`,
+  );
+  return data;
+}
+
+export async function fetchFriendBalance(friendId: number): Promise<FriendBalance> {
+  const { data } = await http.get<FriendBalance>(
+    `/api/shared-expenses/friends/${friendId}/balance`,
+  );
+  return data;
+}
+
+export async function settleWithFriend(
+  friendId: number,
+): Promise<{ splits_settled: number }> {
+  const { data } = await http.post<{ splits_settled: number }>(
+    `/api/shared-expenses/friends/${friendId}/settle`,
+  );
   return data;
 }

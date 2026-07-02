@@ -12,7 +12,15 @@ from aiogram.enums import ParseMode
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
-from app.bot.routers import chat, friends, payments, preview, recurring, start
+from app.bot.routers import (
+    chat,
+    friends,
+    payments,
+    preview,
+    recurring,
+    shared_expenses,
+    start,
+)
 from app.core.bootstrap import load_app_context
 from app.core.config import get_settings
 from app.core.logging import configure_logging
@@ -51,6 +59,7 @@ async def run() -> int:
     dp.include_router(start.router)
     dp.include_router(payments.router)
     dp.include_router(friends.router)
+    dp.include_router(shared_expenses.router)
     dp.include_router(preview.router)
     dp.include_router(recurring.router)
     dp.include_router(chat.router)

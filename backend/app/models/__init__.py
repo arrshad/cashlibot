@@ -24,6 +24,12 @@ from app.models.recurring import (
 )
 from app.models.reminder import Reminder, ReminderType
 from app.models.savings_goal import SavingsGoal
+from app.models.shared_expense import (
+    SharedExpense,
+    SharedExpenseSplit,
+    SharedExpenseStatus,
+    SplitStatus,
+)
 from app.models.stars_purchase import StarsPurchase
 from app.models.transaction import Transaction, TransactionSource, TransactionType
 from app.models.user import User
@@ -50,6 +56,10 @@ __all__ = [
     "Reminder",
     "ReminderType",
     "SavingsGoal",
+    "SharedExpense",
+    "SharedExpenseSplit",
+    "SharedExpenseStatus",
+    "SplitStatus",
     "StarsPurchase",
     "STREAK_BUDGET_ADHERENCE",
     "STREAK_DAILY_LOG",

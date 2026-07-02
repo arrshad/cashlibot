@@ -73,6 +73,23 @@ friends:
   list_empty: "هنوز تو Cashlibot دوستی نداری. از /addfriend @username استفاده کن."
   gone: "این درخواست دیگه فعال نیست."
 
+shared_expense:
+  incoming_split: |
+    {creator_name} یه هزینه‌ی مشترک ثبت کرد: {description} — سهم تو {amount} {currency} می‌شه.
+  button:
+    approve: "قبول"
+    dispute: "اعتراض"
+  answered:
+    approved: "قبول شد"
+    disputed: "اعتراض ثبت شد"
+  followup:
+    approved: "سهم «{description}» رو قبول کردی."
+    disputed: "به سهمت از «{description}» اعتراض کردی. به سازنده اطلاع دادم."
+  creator_disputed: |
+    {friend_name} به سهم خودش از «{description}» اعتراض کرد. با هم صحبت کنید.
+  gone: "این تقسیم دیگه فعال نیست."
+  action_failed: "نشد."
+
 chat:
   not_registered: "اول /start بزن تا ثبتت کنم."
   not_onboarded: "اول تنظیمات اولیه رو تموم کن — /start رو بزن و اپ رو باز کن."

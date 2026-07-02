@@ -16,6 +16,8 @@ import { ReminderList } from '@/pages/reminders/ReminderList';
 import { AddRecurring } from '@/pages/recurring/AddRecurring';
 import { RecurringList } from '@/pages/recurring/RecurringList';
 import { FriendList } from '@/pages/friends/FriendList';
+import { FriendDetail } from '@/pages/friends/FriendDetail';
+import { AddSharedExpense } from '@/pages/friends/AddSharedExpense';
 import { CreditsPage } from '@/pages/credits/CreditsPage';
 import { SettingsPage } from '@/pages/settings/SettingsPage';
 import { QuickAdd } from '@/pages/transactions/QuickAdd';
@@ -74,6 +76,10 @@ export default function App() {
       return <AddRecurring />;
     case 'friends':
       return <FriendList />;
+    case 'friend-detail':
+      return <FriendDetail friendId={route.friendId} />;
+    case 'add-shared-expense':
+      return <AddSharedExpense friendId={route.friendId} />;
     case 'settings':
       return <SettingsPage />;
     case 'credits':

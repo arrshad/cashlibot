@@ -163,7 +163,18 @@ export function FriendList() {
                   </span>
                 </div>
               ) : (
-                overview.accepted.map((f) => <FriendRow key={f.id} f={f} />)
+                overview.accepted.map((f) => (
+                  <FriendRow
+                    key={f.id}
+                    f={f}
+                    onOpen={() =>
+                      go({
+                        name: 'friend-detail',
+                        friendId: f.peer.telegram_id,
+                      })
+                    }
+                  />
+                ))
               )}
             </Section>
 
@@ -205,19 +216,33 @@ function Section({
 function FriendRow({
   f,
   children,
+  onOpen,
 }: {
   f: Friendship;
   children?: React.ReactNode;
+  onOpen?: () => void;
 }) {
+  const clickable = !!onOpen;
   return (
-    <div className="glass-card friend-row">
+    <div
+      className={`glass-card friend-row ${clickable ? 'friend-row-clickable' : ''}`}
+      onClick={clickable ? onOpen : undefined}
+      role={clickable ? 'button' : undefined}
+    >
       <div className="friend-row-body">
         <div className="friend-row-name">{f.peer.display_name}</div>
         {f.peer.username && (
           <div className="friend-row-handle">@{f.peer.username}</div>
         )}
       </div>
-      {children && <div className="friend-row-actions">{children}</div>}
+      {children && (
+        <div
+          className="friend-row-actions"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {children}
+        </div>
+      )}
     </div>
   );
 }

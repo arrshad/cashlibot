@@ -353,3 +353,50 @@ export type FriendsOverview = {
   incoming: Friendship[];
   outgoing: Friendship[];
 };
+
+export type SplitStatus = 'pending_approval' | 'approved' | 'disputed' | 'settled';
+export type SharedExpenseStatus =
+  | 'open'
+  | 'partially_settled'
+  | 'fully_settled';
+
+export type SharedExpenseSplit = {
+  id: string;
+  shared_expense_id: string;
+  user_id: number;
+  amount_owed: string;
+  status: SplitStatus;
+  approved_at: string | null;
+  settled_at: string | null;
+};
+
+export type SharedExpense = {
+  id: string;
+  created_by_user_id: number;
+  description: string;
+  total_amount: string;
+  currency: string;
+  status: SharedExpenseStatus;
+  created_at: string;
+  splits: SharedExpenseSplit[];
+};
+
+export type SharedExpenseCreatePayload = {
+  description: string;
+  total_amount: string;
+  currency: string;
+  splits: { user_id: number; amount_owed: string }[];
+};
+
+export type SharedExpensesOverview = {
+  pending_my_approval: SharedExpenseSplit[];
+  created_by_me: SharedExpense[];
+};
+
+export type CurrencyBalance = { currency: string; amount: string };
+
+export type FriendBalance = {
+  friend_id: number;
+  per_currency: CurrencyBalance[];
+  expenses: SharedExpense[];
+};
