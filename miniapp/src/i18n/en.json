@@ -175,6 +175,11 @@
   "settings.digest.day.fri": "Fri",
   "settings.digest.day.sat": "Sat",
   "settings.digest.day.sun": "Sun",
+  "settings.export.title": "Export your data",
+  "settings.export.subtitle": "A complete copy — accounts, transactions, budgets, goals, credit history.",
+  "settings.export.download_json": "Download JSON",
+  "settings.export.download_csv": "Transactions (CSV)",
+  "settings.export.failed": "Couldn't export. Try again.",
 
   "credits.title": "Credits",
   "credits.balance_label": "Balance",

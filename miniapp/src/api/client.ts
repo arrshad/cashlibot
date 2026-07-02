@@ -305,3 +305,24 @@ export async function fetchReportSummary(
   });
   return data;
 }
+
+// The Authorization header carries initData, so we can't just hit the URL —
+// we fetch as a blob and trigger a download programmatically. Falls back to
+// the browser's default filename if the response omits Content-Disposition.
+export async function downloadExport(
+  path: '/api/export/data.json' | '/api/export/transactions.csv',
+): Promise<void> {
+  const response = await http.get(path, { responseType: 'blob' });
+  const disposition = String(response.headers['content-disposition'] ?? '');
+  const match = disposition.match(/filename="?([^"]+)"?/i);
+  const filename = match?.[1] ?? path.split('/').pop() ?? 'cashlibot-export';
+
+  const url = URL.createObjectURL(response.data as Blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}

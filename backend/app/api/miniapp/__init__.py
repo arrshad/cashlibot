@@ -9,6 +9,7 @@ from app.api.miniapp import (
     config,
     credits,
     dashboard,
+    export,
     friends,
     gamification,
     goals,
@@ -38,5 +39,6 @@ router.include_router(reports.router)
 router.include_router(gamification.router)
 router.include_router(credits.router)
 router.include_router(dashboard.router)
+router.include_router(export.router)
 
 __all__ = ["router"]

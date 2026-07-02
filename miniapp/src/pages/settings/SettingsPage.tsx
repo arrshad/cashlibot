@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { patchMe } from '@/api/client';
+import { downloadExport, patchMe } from '@/api/client';
 import { Icon } from '@/components/Icon';
 import { applyHtmlLang, t } from '@/i18n';
 import { useAppStore } from '@/store/app';
@@ -55,6 +55,8 @@ export function SettingsPage() {
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [exporting, setExporting] = useState<'json' | 'csv' | null>(null);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   // Free-text timezone entry when the user picks "Other".
   const startsCustom = !POPULAR_TIMEZONES.includes(me.timezone);
@@ -73,6 +75,22 @@ export function SettingsPage() {
       setError(err instanceof Error ? err.message : 'failed to save');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const doExport = async (kind: 'json' | 'csv') => {
+    setExporting(kind);
+    setExportError(null);
+    try {
+      await downloadExport(
+        kind === 'json'
+          ? '/api/export/data.json'
+          : '/api/export/transactions.csv',
+      );
+    } catch {
+      setExportError(t(lang, 'settings.export.failed'));
+    } finally {
+      setExporting(null);
     }
   };
 
@@ -282,6 +300,44 @@ export function SettingsPage() {
               </div>
             </>
           )}
+        </section>
+
+        {/* Export data */}
+        <section className="glass-card settings-card">
+          <span className="field-label">
+            {t(lang, 'settings.export.title')}
+          </span>
+          <p className="hint-text" style={{ margin: '4px 0 12px' }}>
+            {t(lang, 'settings.export.subtitle')}
+          </p>
+          {exportError && (
+            <span
+              className="error-text"
+              style={{ display: 'block', marginBottom: 8 }}
+            >
+              {exportError}
+            </span>
+          )}
+          <div className="choice-grid">
+            <button
+              className="btn"
+              disabled={exporting !== null}
+              onClick={() => doExport('json')}
+            >
+              {exporting === 'json'
+                ? t(lang, 'common.loading')
+                : t(lang, 'settings.export.download_json')}
+            </button>
+            <button
+              className="btn"
+              disabled={exporting !== null}
+              onClick={() => doExport('csv')}
+            >
+              {exporting === 'csv'
+                ? t(lang, 'common.loading')
+                : t(lang, 'settings.export.download_csv')}
+            </button>
+          </div>
         </section>
       </div>
     </div>
