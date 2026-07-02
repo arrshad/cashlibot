@@ -107,6 +107,18 @@ chat:
     expired: "این پیش‌نمایش منقضی شده. دوباره بگو."
     failed: "نتونستم ثبتش کنم."
 
+digest:
+  header: "خلاصه‌ی هفته‌ت تو Cashlibot."
+  spent: "این هفته خرج کردی: {totals}."
+  top_categories_header: "بیشترین دسته‌ها:"
+  top_category_row: "  • {name} — {amount}"
+  budgets_header: "بودجه‌هایی که باید حواست باشه:"
+  budget_warning: "  • {percent}٪ مصرف شده ({spent} از {limit})"
+  budget_exceeded: "  • رد شده: {percent}٪ ({spent} از {limit})"
+  streak: "روند ثبت روزانه: {days} روز. همینو نگه دار."
+  behavior_score: "امتیاز مالیت: {score}/۱۰۰."
+  footer: "برای جزئیات بیشتر اپ رو باز کن."
+
 admin:
   not_available: "این دستور در دسترس نیست."
   jwt_secret_missing: |

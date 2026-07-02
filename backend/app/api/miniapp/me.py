@@ -28,6 +28,9 @@ class UserOut(BaseModel):
     credit_balance: int
     is_admin: bool
     onboarding_completed: bool
+    weekly_digest_enabled: bool
+    weekly_digest_hour: int
+    weekly_digest_dow: int
 
     @classmethod
     def from_model(cls, u: User) -> "UserOut":
@@ -42,6 +45,9 @@ class UserOut(BaseModel):
             credit_balance=u.credit_balance,
             is_admin=u.is_admin,
             onboarding_completed=u.onboarding_completed,
+            weekly_digest_enabled=u.weekly_digest_enabled,
+            weekly_digest_hour=u.weekly_digest_hour,
+            weekly_digest_dow=u.weekly_digest_dow,
         )
 
 
@@ -50,6 +56,10 @@ class UserPatchIn(BaseModel):
     calendar_system: Literal["gregorian", "jalali", "hijri"] | None = None
     timezone: str | None = None
     default_currency: str | None = Field(default=None, min_length=2, max_length=5)
+    weekly_digest_enabled: bool | None = None
+    weekly_digest_hour: int | None = Field(default=None, ge=0, le=23)
+    # 0=Mon..6=Sun to match datetime.weekday().
+    weekly_digest_dow: int | None = Field(default=None, ge=0, le=6)
 
 
 @router.get("/me", response_model=UserOut)

@@ -24,6 +24,19 @@ const POPULAR_TIMEZONES: string[] = [
 
 const CALENDARS: CalendarSystem[] = ['gregorian', 'jalali', 'hijri'];
 
+// 0=Mon .. 6=Sun, matching datetime.weekday() on the server.
+const DIGEST_DAYS: { dow: number; key: string }[] = [
+  { dow: 0, key: 'settings.digest.day.mon' },
+  { dow: 1, key: 'settings.digest.day.tue' },
+  { dow: 2, key: 'settings.digest.day.wed' },
+  { dow: 3, key: 'settings.digest.day.thu' },
+  { dow: 4, key: 'settings.digest.day.fri' },
+  { dow: 5, key: 'settings.digest.day.sat' },
+  { dow: 6, key: 'settings.digest.day.sun' },
+];
+
+const DIGEST_HOURS = Array.from({ length: 24 }, (_, h) => h);
+
 function isValidTz(tz: string): boolean {
   try {
     new Intl.DateTimeFormat(undefined, { timeZone: tz });
@@ -208,6 +221,67 @@ export function SettingsPage() {
               </button>
             ))}
           </div>
+        </section>
+
+        {/* Weekly digest */}
+        <section className="glass-card settings-card">
+          <span className="field-label">
+            {t(lang, 'settings.digest.title')}
+          </span>
+          <p className="hint-text" style={{ margin: '4px 0 12px' }}>
+            {t(lang, 'settings.digest.subtitle')}
+          </p>
+          <div className="choice-grid">
+            {[true, false].map((value) => (
+              <button
+                key={String(value)}
+                className={`btn ${me.weekly_digest_enabled === value ? 'btn-selected' : ''}`}
+                onClick={() => apply({ weekly_digest_enabled: value })}
+              >
+                {value ? t(lang, 'common.on') : t(lang, 'common.off')}
+              </button>
+            ))}
+          </div>
+
+          {me.weekly_digest_enabled && (
+            <>
+              <div style={{ marginTop: 16 }}>
+                <span className="field-label">
+                  {t(lang, 'settings.digest.day')}
+                </span>
+                <div className="choice-grid">
+                  {DIGEST_DAYS.map(({ dow, key }) => (
+                    <button
+                      key={dow}
+                      className={`btn ${me.weekly_digest_dow === dow ? 'btn-selected' : ''}`}
+                      onClick={() => apply({ weekly_digest_dow: dow })}
+                    >
+                      {t(lang, key)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ marginTop: 16 }}>
+                <span className="field-label">
+                  {t(lang, 'settings.digest.hour')}
+                </span>
+                <select
+                  className="input"
+                  value={me.weekly_digest_hour}
+                  onChange={(e) =>
+                    apply({ weekly_digest_hour: Number(e.target.value) })
+                  }
+                >
+                  {DIGEST_HOURS.map((h) => (
+                    <option key={h} value={h}>
+                      {h.toString().padStart(2, '0')}:00
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </>
+          )}
         </section>
       </div>
     </div>

@@ -25,6 +25,10 @@ from app.bot.routers import (
 from app.core.bootstrap import load_app_context
 from app.core.config import get_settings
 from app.core.logging import configure_logging
+from app.scheduler.digest import (
+    TICK_INTERVAL_SECONDS as DIGEST_TICK_SECONDS,
+    tick_digests,
+)
 from app.scheduler.recurring import (
     TICK_INTERVAL_SECONDS as RECURRING_TICK_SECONDS,
     tick_recurring,
@@ -91,11 +95,21 @@ async def run() -> int:
         max_instances=1,
         replace_existing=True,
     )
+    scheduler.add_job(
+        tick_digests,
+        IntervalTrigger(seconds=DIGEST_TICK_SECONDS),
+        args=[bot],
+        id="digest_tick",
+        coalesce=True,
+        max_instances=1,
+        replace_existing=True,
+    )
     scheduler.start()
     log.info(
-        "scheduler started (reminders every %ds, recurring every %ds)",
+        "scheduler started (reminders %ds, recurring %ds, digest %ds)",
         TICK_INTERVAL_SECONDS,
         RECURRING_TICK_SECONDS,
+        DIGEST_TICK_SECONDS,
     )
 
     try:
