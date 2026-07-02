@@ -1,8 +1,11 @@
 # Cashlibot
 
-Telegram personal finance tracker: bot + Mini App + admin dashboard.
+Telegram personal finance tracker — Bot + Mini App + Admin Dashboard.
 
-This repository is in early-build. See `master-prompt.md` (or the original spec) for the full design.
+Log transactions by chatting with the bot, get an LLM-parsed preview, and
+confirm. See balances, budgets, goals, and weekly reports in the Mini App.
+Split expenses with friends, hit XP levels for consistency, and top up
+credits for AI features with Telegram Stars.
 
 ## Stack at a glance
 
@@ -10,27 +13,48 @@ This repository is in early-build. See `master-prompt.md` (or the original spec)
 |---|---|
 | Bot | aiogram 3 |
 | API | FastAPI |
-| Worker | APScheduler 4 (co-located with bot for now) |
+| Worker | APScheduler (co-located with the bot) |
 | DB | PostgreSQL 16 + pgvector |
 | ORM | SQLModel (SQLAlchemy 2 + Pydantic) |
-| Cache / queues | Redis 7 |
-| AI orchestration | LangChain (provider-agnostic) |
+| Cache | Redis 7 |
+| AI orchestration | LangChain (DeepSeek / OpenAI / Anthropic) |
 | Mini App | React 18 + Vite + TS |
 | Admin | React 18 + Vite + TS |
+| Prod ingress | Traefik on an external `web` network |
+
+## Features
+
+- **Onboarding** in the Mini App (language, timezone, calendar, currency).
+- **Accounts + transactions** with per-currency balances and manual entry.
+- **AI agent** parses free-text messages into a preview the user confirms.
+- **Semantic memory** in pgvector and learned per-user categorisation rules.
+- **Budgets** with warning / exceeded threshold alerts.
+- **Savings goals** with contribution tracking + goal badges.
+- **Gamification**: XP, levels, badges, daily-log streak.
+- **Reminders** and **recurring** transactions with in-chat confirm/skip.
+- **Credits + Telegram Stars** to top up for AI-metered features.
+- **Friends** (with 20 XP on first accept) and **shared expenses** with split
+  approvals + dispute + settle flow.
+- **Analytics**: category breakdown, income-vs-expense, monthly trend,
+  savings rate, behavior score, monthly comparison.
+- **Weekly digest**: opt-out DM at a user-chosen day + hour with the last
+  7 days' recap, top categories, budget hotspots, streak, and behavior score.
+- **Admin dashboard**: JWT sign-in from `/admin` in the bot, KPI overview,
+  paginated user search, credit adjustments backed by the same ledger.
 
 ## Running locally
 
 You need:
 
 - Docker Desktop running
-- A Telegram bot token (get one from [@BotFather](https://t.me/BotFather))
-- Optionally, an AI provider API key (DeepSeek / OpenAI / Anthropic) — only required once AI features are wired in
+- A Telegram bot token from [@BotFather](https://t.me/BotFather)
+- Optionally, an AI provider key (DeepSeek / OpenAI / Anthropic)
 
 ### First time
 
 ```bash
 cp .env.example .env
-# Edit .env and set TELEGRAM_BOT_TOKEN at minimum
+# At minimum: set TELEGRAM_BOT_TOKEN and TELEGRAM_BOT_USERNAME.
 docker compose up --build
 ```
 
@@ -45,49 +69,65 @@ That brings up:
 | Mini App (Vite dev) | `http://localhost:5173` |
 | Admin (Vite dev) | `http://localhost:5174` |
 
-Migrations run automatically on api / bot startup.
+Migrations run automatically on api / bot startup via the `migrate` service.
 
-### Stop everything
-
-```bash
-docker compose down
-```
-
-### Reset the database
+### Stop / reset
 
 ```bash
-docker compose down -v
+docker compose down          # stop
+docker compose down -v       # also drop postgres data + node_modules volumes
 ```
 
-`-v` removes the named postgres volume, so the next `up` re-runs all migrations against a clean DB.
+## Deploying (Traefik + external `web` network)
+
+The prod overlay `docker-compose.prod.yml` routes api / admin / miniapp
+behind Traefik on a shared external network named `web`. TLS is handled by
+Traefik itself via an ACME certResolver.
+
+On the server:
+
+```bash
+docker network create web             # once
+cp .env.example .env
+# Fill in TELEGRAM_BOT_TOKEN, PUBLIC_HOSTNAME=cashlibot.example.com,
+# MINIAPP_URL=https://cashlibot.example.com,
+# ADMIN_URL=https://cashlibot.example.com/admin,
+# TRAEFIK_CERT_RESOLVER=<name from Traefik's static config>,
+# and the AI provider key(s) you use.
+
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+```
+
+Path-based routing on the single host:
+
+| Path | Service |
+|---|---|
+| `/api/…` | api (FastAPI) |
+| `/admin/…` | admin (with `VITE_BASE=/admin/`) |
+| `/` (catch-all) | miniapp |
+| `/health` | api |
+
+Any HTTP hit on the same host is redirected to HTTPS.
 
 ## Repository layout
 
 ```
-backend/   FastAPI app + aiogram bot + APScheduler worker (one Python project)
-miniapp/   React + Vite Telegram Mini App
-admin/     React + Vite admin dashboard
-nginx/     Reverse proxy config (used in prod deploys, not local dev)
+backend/    FastAPI + aiogram + APScheduler (one Python project)
+  app/api/      HTTP handlers (miniapp + admin routers)
+  app/bot/      aiogram routers
+  app/ai/       LangChain agent, tools, memory
+  app/services/ Domain services (accounts, budgets, digest, …)
+  app/scheduler/ Periodic jobs (reminders, recurring, digest)
+  app/models/   SQLModel tables
+  migrations/   Alembic migrations
+miniapp/    React + Vite Telegram Mini App
+admin/      React + Vite admin dashboard
 ```
 
 ## Workflow
 
 - Trunk-based: `master` is always deployable.
-- All work on short-lived feature branches: `feat/<scope>/<description>`.
+- Short-lived feature branches, `feat/<scope>/<description>` or
+  `fix/<scope>/<description>`.
 - Conventional Commits (`feat`, `fix`, `refactor`, `docs`, `chore`).
-- Every branch merged via Pull Request.
-- No CI/CD wiring yet — deployment is manual `docker compose up` on a server.
-
-## What's built
-
-This is the first scaffold commit. Working today:
-
-- Docker Compose brings everything up cleanly
-- YAML configs (`currencies.yaml`, `ai_providers.yaml`, `app.yaml`) load + validate on startup
-- Postgres has the `vector` extension enabled
-- Alembic migration creates the `user` table
-- FastAPI `/health` returns OK
-- Bot responds to `/start` with a stubbed welcome
-- Both frontends boot to a placeholder page
-
-Everything else from the spec — accounts, transactions, AI agent, mini app screens, admin dashboard, friends, gamification, etc. — is upcoming work.
+- Every branch merged via Pull Request. CI is not wired up yet.

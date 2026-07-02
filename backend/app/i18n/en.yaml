@@ -107,6 +107,18 @@ chat:
     expired: "That preview expired. Send it again."
     failed: "Couldn't save that one."
 
+digest:
+  header: "Here's your week on Cashlibot."
+  spent: "Spent this week: {totals}."
+  top_categories_header: "Top categories:"
+  top_category_row: "  • {name} — {amount}"
+  budgets_header: "Budgets to watch:"
+  budget_warning: "  • {percent}% used ({spent} / {limit})"
+  budget_exceeded: "  • over budget: {percent}% ({spent} / {limit})"
+  streak: "Logging streak: {days} days. Keep it going."
+  behavior_score: "Behavior score: {score}/100."
+  footer: "Open the app for the full picture."
+
 admin:
   not_available: "Command not available."
   jwt_secret_missing: |

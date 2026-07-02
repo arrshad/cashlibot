@@ -33,5 +33,16 @@ class User(SQLModel, table=True):
     credit_balance: int = Field(default=0)
     is_admin: bool = Field(default=False)
     onboarding_completed: bool = Field(default=False)
+
+    # Weekly digest DM prefs (opt-out). Hour is 0-23 in the user's timezone,
+    # dow is 0=Mon..6=Sun (matches datetime.weekday()).
+    weekly_digest_enabled: bool = Field(default=True)
+    weekly_digest_hour: int = Field(default=9)
+    weekly_digest_dow: int = Field(default=0)
+    last_weekly_digest_at: datetime | None = Field(
+        default=None,
+        sa_column=Column(DateTime(timezone=True), nullable=True),
+    )
+
     created_at: datetime = Field(default_factory=_utcnow, sa_column=_tz_dt_column())
     updated_at: datetime = Field(default_factory=_utcnow, sa_column=_tz_dt_column())

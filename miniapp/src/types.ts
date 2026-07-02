@@ -21,6 +21,9 @@ export type Me = {
   credit_balance: number;
   is_admin: boolean;
   onboarding_completed: boolean;
+  weekly_digest_enabled: boolean;
+  weekly_digest_hour: number;
+  weekly_digest_dow: number;
 };
 
 export type CurrencyOption = {
@@ -296,6 +299,9 @@ export type UserPatchPayload = Partial<{
   calendar_system: CalendarSystem;
   timezone: string;
   default_currency: string;
+  weekly_digest_enabled: boolean;
+  weekly_digest_hour: number;
+  weekly_digest_dow: number;
 }>;
 
 export type CreditPackage = {
