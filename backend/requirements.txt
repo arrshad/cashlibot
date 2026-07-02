@@ -27,6 +27,11 @@ langchain-anthropic==0.3.1
 
 # Semantic memory via pgvector (Postgres extension enabled in migration 0001).
 pgvector==0.3.6
+# pgvector transitively pulls in NumPy. NumPy 2.x is built with an X86_V2
+# CPU baseline (SSE4.2/POPCNT), which some older/virtualised server CPUs
+# don't advertise, causing an ImportError at boot. 1.26.x supports the
+# older baseline and still works with Python 3.12 + pgvector 0.3.
+numpy>=1.26,<2.0
 
 # Scheduler for reminders (recurring transactions will reuse it later).
 APScheduler==3.10.4
