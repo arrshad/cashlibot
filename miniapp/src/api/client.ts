@@ -16,13 +16,15 @@ import type {
   Friendship,
   FriendsOverview,
   RecurringCreatePayload,
+  RecurringTemplate,
+  Reminder,
+  ReminderCreatePayload,
+  ReportPeriod,
+  ReportSummary,
   SharedExpense,
   SharedExpenseCreatePayload,
   SharedExpenseSplit,
   SharedExpensesOverview,
-  RecurringTemplate,
-  Reminder,
-  ReminderCreatePayload,
   SavingsGoal,
   SavingsGoalCreatePayload,
   UserPatchPayload,
@@ -292,5 +294,14 @@ export async function settleWithFriend(
   const { data } = await http.post<{ splits_settled: number }>(
     `/api/shared-expenses/friends/${friendId}/settle`,
   );
+  return data;
+}
+
+export async function fetchReportSummary(
+  period: ReportPeriod,
+): Promise<ReportSummary> {
+  const { data } = await http.get<ReportSummary>('/api/reports/summary', {
+    params: { period },
+  });
   return data;
 }

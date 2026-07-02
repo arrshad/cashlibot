@@ -400,3 +400,54 @@ export type FriendBalance = {
   per_currency: CurrencyBalance[];
   expenses: SharedExpense[];
 };
+
+export type ReportPeriod = 'week' | 'month' | 'quarter' | 'year';
+
+export type BehaviorScore = {
+  total: number;
+  logging_consistency: number;
+  budget_adherence: number;
+  savings_rate: number;
+  debt_free: number;
+  goal_progress: number;
+};
+
+export type CategoryReportRow = {
+  category_id: string;
+  name: string;
+  icon: string;
+  amount: string;
+  currency: string;
+};
+
+export type DirectionTotal = {
+  currency: string;
+  income: string;
+  expense: string;
+};
+
+export type MonthBucket = {
+  year: number;
+  month: number;
+  income: string;
+  expense: string;
+};
+
+export type MonthlyComparison = {
+  this_month_expense: string;
+  last_month_expense: string;
+  delta_pct: number | null;
+  currency: string | null;
+};
+
+export type ReportSummary = {
+  period: ReportPeriod;
+  period_start: string;
+  period_end: string;
+  by_category: CategoryReportRow[];
+  income_vs_expense: DirectionTotal[];
+  savings_rate: number;
+  monthly_trend: MonthBucket[];
+  monthly_comparison: MonthlyComparison;
+  behavior_score: BehaviorScore;
+};

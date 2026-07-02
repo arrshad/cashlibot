@@ -542,10 +542,10 @@ input, textarea {
 
 .dashboard-links {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
 }
-.dashboard-links .btn { font-size: 13px; padding: 12px 8px; }
+.dashboard-links .btn { font-size: 12px; padding: 10px 6px; }
 
 /* ----- Reminders ----- */
 
@@ -1002,3 +1002,91 @@ input, textarea {
 }
 .split-input-name { flex: 1; font-size: 14px; }
 .split-input-row .input { width: 120px; }
+
+/* ----- Reports ----- */
+
+.behavior-card {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.behavior-card-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.behavior-total {
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #ffffff, var(--accent-primary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.behavior-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.behavior-row { display: flex; flex-direction: column; gap: 4px; }
+
+.behavior-row-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 13px;
+}
+
+.behavior-bar {
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-surface);
+  overflow: hidden;
+}
+
+.behavior-bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  transition: width var(--dur-med) var(--ease);
+}
+
+.report-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.report-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.report-stat-value {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.category-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.category-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.category-legend-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-pill);
+}
+.category-legend-name { flex: 1; }
+.category-legend-value { color: var(--text-secondary); font-variant-numeric: tabular-nums; }
