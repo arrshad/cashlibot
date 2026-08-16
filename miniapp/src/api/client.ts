@@ -43,7 +43,9 @@ import type {
 // In dev, the Mini App is served on :5173 and the API runs at :8000.
 // In prod the Mini App is reverse-proxied to the same origin as the API,
 // so the empty-string base just resolves relatively.
-const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:8000';
+// Same-origin by default: Vite dev proxies /api → api:8000 (see vite.config.ts).
+// In prod behind Traefik, /api is routed to the api service on the same host too.
+const API_BASE = import.meta.env.VITE_API_BASE ?? '';
 
 const http = axios.create({
   baseURL: API_BASE,

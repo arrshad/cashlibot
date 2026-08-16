@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { downloadExport, patchMe } from '@/api/client';
 import { Icon } from '@/components/Icon';
+import { MenuRow } from '@/components/MenuRow';
+import { PickerSheet, type PickerOption } from '@/components/PickerSheet';
+import { Sheet } from '@/components/Sheet';
 import { applyHtmlLang, t } from '@/i18n';
 import { useAppStore } from '@/store/app';
-import { useNavStore } from '@/store/nav';
 import type {
   CalendarSystem,
   Lang,
@@ -24,7 +26,6 @@ const POPULAR_TIMEZONES: string[] = [
 
 const CALENDARS: CalendarSystem[] = ['gregorian', 'jalali', 'hijri'];
 
-// 0=Mon .. 6=Sun, matching datetime.weekday() on the server.
 const DIGEST_DAYS: { dow: number; key: string }[] = [
   { dow: 0, key: 'settings.digest.day.mon' },
   { dow: 1, key: 'settings.digest.day.tue' },
@@ -35,34 +36,25 @@ const DIGEST_DAYS: { dow: number; key: string }[] = [
   { dow: 6, key: 'settings.digest.day.sun' },
 ];
 
-const DIGEST_HOURS = Array.from({ length: 24 }, (_, h) => h);
-
-function isValidTz(tz: string): boolean {
-  try {
-    new Intl.DateTimeFormat(undefined, { timeZone: tz });
-    return true;
-  } catch {
-    return false;
-  }
-}
+type Picker =
+  | null
+  | { kind: 'language' }
+  | { kind: 'calendar' }
+  | { kind: 'timezone' }
+  | { kind: 'currency' }
+  | { kind: 'digest' }
+  | { kind: 'export' }
+  | { kind: 'profile' };
 
 export function SettingsPage() {
   const me = useAppStore((s) => s.me!);
   const config = useAppStore((s) => s.config!);
   const setMe = useAppStore((s) => s.setMe);
-  const go = useNavStore((s) => s.go);
   const lang = me.language_code;
 
+  const [picker, setPicker] = useState<Picker>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [exporting, setExporting] = useState<'json' | 'csv' | null>(null);
-  const [exportError, setExportError] = useState<string | null>(null);
-
-  // Free-text timezone entry when the user picks "Other".
-  const startsCustom = !POPULAR_TIMEZONES.includes(me.timezone);
-  const [tzCustom, setTzCustom] = useState(startsCustom);
-  const [tzText, setTzText] = useState(startsCustom ? me.timezone : '');
-  const [tzError, setTzError] = useState<string | null>(null);
 
   const apply = async (patch: UserPatchPayload) => {
     setSaving(true);
@@ -78,51 +70,21 @@ export function SettingsPage() {
     }
   };
 
-  const doExport = async (kind: 'json' | 'csv') => {
-    setExporting(kind);
-    setExportError(null);
-    try {
-      await downloadExport(
-        kind === 'json'
-          ? '/api/export/data.json'
-          : '/api/export/transactions.csv',
-      );
-    } catch {
-      setExportError(t(lang, 'settings.export.failed'));
-    } finally {
-      setExporting(null);
-    }
+  const currencyLabel = (code: string | null) => {
+    if (!code) return '—';
+    const c = config.currencies.find((x) => x.code === code);
+    return c ? `${c.code} · ${c.symbol}` : code;
   };
 
-  const submitTz = () => {
-    const value = tzText.trim();
-    if (!isValidTz(value)) {
-      setTzError(t(lang, 'onboarding.timezone.invalid'));
-      return;
-    }
-    setTzError(null);
-    apply({ timezone: value });
-    setTzCustom(false);
-  };
+  const tzShort = (tz: string) =>
+    tz.split('/').pop()?.replace('_', ' ') ?? tz;
 
   return (
-    <div className="app-shell">
+    <div className="app-shell has-tabbar">
       <div className="app-frame">
-        <div className="page-header">
-          <button
-            className="icon-btn"
-            onClick={() => go({ name: 'dashboard' })}
-            aria-label={t(lang, 'common.back')}
-          >
-            <Icon name="fa-arrow-left" />
-          </button>
-          <h2 className="step-title">{t(lang, 'settings.title')}</h2>
-          {saving && (
-            <span className="hint-text" style={{ marginInlineStart: 'auto' }}>
-              {t(lang, 'settings.saving')}
-            </span>
-          )}
-        </div>
+        <h2 className="step-title" style={{ margin: '4px 4px 4px' }}>
+          {t(lang, 'settings.title')}
+        </h2>
 
         {error && (
           <div className="glass-card" style={{ padding: 16 }}>
@@ -130,216 +92,441 @@ export function SettingsPage() {
           </div>
         )}
 
-        {/* Language */}
-        <section className="glass-card settings-card">
-          <span className="field-label">{t(lang, 'settings.language')}</span>
-          <div className="choice-grid">
-            {(['en', 'fa'] as Lang[]).map((code) => (
-              <button
-                key={code}
-                className={`btn ${me.language_code === code ? 'btn-selected' : ''}`}
-                onClick={() => apply({ language_code: code })}
-              >
-                {code === 'en' ? 'English' : 'فارسی'}
-              </button>
-            ))}
+        {/* Profile */}
+        <div className="profile-card">
+          <div className="profile-avatar">
+            {me.display_name.trim().charAt(0).toUpperCase() || '?'}
           </div>
-        </section>
-
-        {/* Calendar */}
-        <section className="glass-card settings-card">
-          <span className="field-label">{t(lang, 'settings.calendar')}</span>
-          <div className="choice-grid">
-            {CALENDARS.map((c) => (
-              <button
-                key={c}
-                className={`btn ${me.calendar_system === c ? 'btn-selected' : ''}`}
-                onClick={() => apply({ calendar_system: c })}
-              >
-                {t(lang, `onboarding.calendar.${c}`)}
-              </button>
-            ))}
+          <div className="profile-body">
+            <span className="profile-name">{me.display_name}</span>
+            <span className="profile-sub">
+              {me.username ? `@${me.username}` : `id ${me.telegram_id}`}
+            </span>
           </div>
-        </section>
+          <button
+            className="icon-btn"
+            onClick={() => setPicker({ kind: 'profile' })}
+            aria-label={t(lang, 'settings.profile.edit')}
+          >
+            <Icon name="fa-pencil" />
+          </button>
+        </div>
 
-        {/* Timezone */}
-        <section className="glass-card settings-card">
-          <span className="field-label">{t(lang, 'settings.timezone')}</span>
-          {tzCustom ? (
-            <div className="field">
-              <input
-                className="input"
-                placeholder={t(lang, 'onboarding.timezone.custom_placeholder')}
-                value={tzText}
-                onChange={(e) => {
-                  setTzText(e.target.value);
-                  setTzError(null);
-                }}
-                autoFocus
-              />
-              {tzError && <span className="error-text">{tzError}</span>}
-              <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
-                <button
-                  className="btn btn-ghost"
-                  onClick={() => {
-                    setTzCustom(false);
-                    setTzError(null);
-                  }}
-                >
-                  {t(lang, 'common.cancel')}
-                </button>
-                <button
-                  className="btn btn-primary"
-                  disabled={!tzText.trim() || saving}
-                  onClick={submitTz}
-                >
-                  {t(lang, 'common.done')}
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="choice-grid">
-              {POPULAR_TIMEZONES.map((tz) => (
-                <button
-                  key={tz}
-                  className={`btn ${me.timezone === tz ? 'btn-selected' : ''}`}
-                  onClick={() => apply({ timezone: tz })}
-                >
-                  {tz.split('/').pop()!.replace('_', ' ')}
-                </button>
-              ))}
-              <button
-                className={`btn ${startsCustom ? 'btn-selected' : ''}`}
-                style={{ gridColumn: '1 / -1' }}
-                onClick={() => setTzCustom(true)}
-              >
-                {t(lang, 'common.other')}
-                {startsCustom && `: ${me.timezone}`}
-              </button>
-            </div>
-          )}
-        </section>
+        {/* General */}
+        <div className="list-section">
+          <MenuRow
+            icon="fa-language"
+            tint="purple"
+            title={t(lang, 'settings.language')}
+            value={lang === 'en' ? 'English' : 'فارسی'}
+            onClick={() => setPicker({ kind: 'language' })}
+          />
+          <MenuRow
+            icon="fa-calendar"
+            tint="orange"
+            title={t(lang, 'settings.calendar')}
+            value={t(lang, `onboarding.calendar.${me.calendar_system}`)}
+            onClick={() => setPicker({ kind: 'calendar' })}
+          />
+          <MenuRow
+            icon="fa-clock"
+            tint="blue"
+            title={t(lang, 'settings.timezone')}
+            value={tzShort(me.timezone)}
+            onClick={() => setPicker({ kind: 'timezone' })}
+          />
+          <MenuRow
+            icon="fa-dollar-sign"
+            tint="green"
+            title={t(lang, 'settings.default_currency')}
+            value={currencyLabel(me.default_currency)}
+            onClick={() => setPicker({ kind: 'currency' })}
+          />
+        </div>
 
-        {/* Default currency */}
-        <section className="glass-card settings-card">
-          <span className="field-label">{t(lang, 'settings.default_currency')}</span>
-          <div className="choice-grid">
-            {config.currencies.map((c) => (
-              <button
-                key={c.code}
-                className={`btn ${me.default_currency === c.code ? 'btn-selected' : ''}`}
-                onClick={() => apply({ default_currency: c.code })}
-              >
-                <span style={{ fontWeight: 600 }}>{c.code}</span>
-                <span
-                  style={{ color: 'var(--text-secondary)', marginInlineStart: 8 }}
-                >
-                  {c.symbol}
-                </span>
-              </button>
-            ))}
-          </div>
-        </section>
+        {/* Notifications + Data */}
+        <div className="list-section">
+          <MenuRow
+            icon="fa-bell"
+            tint="red"
+            title={t(lang, 'settings.digest.title')}
+            value={
+              me.weekly_digest_enabled
+                ? t(lang, 'common.on')
+                : t(lang, 'common.off')
+            }
+            onClick={() => setPicker({ kind: 'digest' })}
+          />
+          <MenuRow
+            icon="fa-arrow-down"
+            tint="teal"
+            title={t(lang, 'settings.export.title')}
+            onClick={() => setPicker({ kind: 'export' })}
+          />
+        </div>
 
-        {/* Weekly digest */}
-        <section className="glass-card settings-card">
-          <span className="field-label">
-            {t(lang, 'settings.digest.title')}
+        {saving && (
+          <span className="hint-text" style={{ textAlign: 'center' }}>
+            {t(lang, 'settings.saving')}
           </span>
-          <p className="hint-text" style={{ margin: '4px 0 12px' }}>
-            {t(lang, 'settings.digest.subtitle')}
-          </p>
-          <div className="choice-grid">
-            {[true, false].map((value) => (
-              <button
-                key={String(value)}
-                className={`btn ${me.weekly_digest_enabled === value ? 'btn-selected' : ''}`}
-                onClick={() => apply({ weekly_digest_enabled: value })}
-              >
-                {value ? t(lang, 'common.on') : t(lang, 'common.off')}
-              </button>
-            ))}
-          </div>
+        )}
+      </div>
 
-          {me.weekly_digest_enabled && (
-            <>
-              <div style={{ marginTop: 16 }}>
-                <span className="field-label">
-                  {t(lang, 'settings.digest.day')}
-                </span>
-                <div className="choice-grid">
-                  {DIGEST_DAYS.map(({ dow, key }) => (
-                    <button
-                      key={dow}
-                      className={`btn ${me.weekly_digest_dow === dow ? 'btn-selected' : ''}`}
-                      onClick={() => apply({ weekly_digest_dow: dow })}
-                    >
-                      {t(lang, key)}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div style={{ marginTop: 16 }}>
-                <span className="field-label">
-                  {t(lang, 'settings.digest.hour')}
-                </span>
-                <select
-                  className="input"
-                  value={me.weekly_digest_hour}
-                  onChange={(e) =>
-                    apply({ weekly_digest_hour: Number(e.target.value) })
-                  }
-                >
-                  {DIGEST_HOURS.map((h) => (
-                    <option key={h} value={h}>
-                      {h.toString().padStart(2, '0')}:00
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </>
+      {picker?.kind === 'language' && (
+        <PickerSheet
+          title={t(lang, 'settings.language')}
+          value={lang}
+          onChange={(v) => apply({ language_code: v as Lang })}
+          onClose={() => setPicker(null)}
+          options={[
+            { value: 'en', label: 'English' },
+            { value: 'fa', label: 'فارسی' },
+          ]}
+        />
+      )}
+      {picker?.kind === 'calendar' && (
+        <PickerSheet
+          title={t(lang, 'settings.calendar')}
+          value={me.calendar_system}
+          onChange={(v) =>
+            apply({ calendar_system: v as CalendarSystem })
+          }
+          onClose={() => setPicker(null)}
+          options={CALENDARS.map((c): PickerOption<string> => ({
+            value: c,
+            label: t(lang, `onboarding.calendar.${c}`),
+          }))}
+        />
+      )}
+      {picker?.kind === 'timezone' && (
+        <TimezonePicker
+          value={me.timezone}
+          onChange={(tz) => apply({ timezone: tz })}
+          onClose={() => setPicker(null)}
+          lang={lang}
+        />
+      )}
+      {picker?.kind === 'currency' && (
+        <PickerSheet
+          title={t(lang, 'settings.default_currency')}
+          value={me.default_currency ?? ''}
+          onChange={(v) => apply({ default_currency: v as string })}
+          onClose={() => setPicker(null)}
+          options={config.currencies.map(
+            (c): PickerOption<string> => ({
+              value: c.code,
+              label: `${c.code} · ${c.symbol}`,
+              hint: c.name,
+            }),
           )}
-        </section>
+        />
+      )}
+      {picker?.kind === 'digest' && (
+        <DigestPicker
+          lang={lang}
+          enabled={me.weekly_digest_enabled}
+          hour={me.weekly_digest_hour}
+          dow={me.weekly_digest_dow}
+          onChange={apply}
+          onClose={() => setPicker(null)}
+        />
+      )}
+      {picker?.kind === 'export' && (
+        <ExportPicker lang={lang} onClose={() => setPicker(null)} />
+      )}
+      {picker?.kind === 'profile' && (
+        <ProfilePicker
+          initial={me.display_name}
+          lang={lang}
+          onSubmit={async (name) => {
+            await apply({ display_name: name } as UserPatchPayload);
+          }}
+          onClose={() => setPicker(null)}
+        />
+      )}
+    </div>
+  );
+}
 
-        {/* Export data */}
-        <section className="glass-card settings-card">
-          <span className="field-label">
-            {t(lang, 'settings.export.title')}
-          </span>
-          <p className="hint-text" style={{ margin: '4px 0 12px' }}>
-            {t(lang, 'settings.export.subtitle')}
-          </p>
-          {exportError && (
-            <span
-              className="error-text"
-              style={{ display: 'block', marginBottom: 8 }}
+function TimezonePicker({
+  value,
+  onChange,
+  onClose,
+  lang,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  onClose: () => void;
+  lang: Lang;
+}) {
+  const [custom, setCustom] = useState('');
+  return (
+    <Sheet
+      title={t(lang, 'settings.timezone')}
+      onClose={onClose}
+      footer={
+        custom.trim().length > 0 && (
+          <button
+            className="btn btn-primary"
+            onClick={() => {
+              onChange(custom.trim());
+              onClose();
+            }}
+          >
+            {t(lang, 'common.done')}
+          </button>
+        )
+      }
+    >
+      <input
+        className="input"
+        placeholder={t(lang, 'onboarding.timezone.custom_placeholder')}
+        value={custom}
+        onChange={(e) => setCustom(e.target.value)}
+      />
+      <div className="picker-list">
+        {POPULAR_TIMEZONES.map((tz) => {
+          const active = tz === value;
+          return (
+            <button
+              key={tz}
+              className={`picker-row${active ? ' active' : ''}`}
+              onClick={() => {
+                onChange(tz);
+                onClose();
+              }}
             >
-              {exportError}
+              <span className="picker-row-label">{tz}</span>
+              {active && (
+                <span className="picker-row-check">
+                  <Icon name="fa-check" />
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </Sheet>
+  );
+}
+
+function DigestPicker({
+  lang,
+  enabled,
+  hour,
+  dow,
+  onChange,
+  onClose,
+}: {
+  lang: Lang;
+  enabled: boolean;
+  hour: number;
+  dow: number;
+  onChange: (p: UserPatchPayload) => Promise<void>;
+  onClose: () => void;
+}) {
+  const [h, setH] = useState(String(hour));
+  return (
+    <Sheet
+      title={t(lang, 'settings.digest.title')}
+      onClose={onClose}
+      footer={
+        <button
+          className="btn btn-primary"
+          onClick={async () => {
+            const parsed = Math.max(0, Math.min(23, Number(h) || 0));
+            await onChange({ weekly_digest_hour: parsed });
+            onClose();
+          }}
+        >
+          {t(lang, 'common.done')}
+        </button>
+      }
+    >
+      <p className="hint-text" style={{ marginTop: -4 }}>
+        {t(lang, 'settings.digest.subtitle')}
+      </p>
+
+      <div className="picker-list">
+        <button
+          className={`picker-row${enabled ? ' active' : ''}`}
+          onClick={() => onChange({ weekly_digest_enabled: true })}
+        >
+          <span className="picker-row-label">{t(lang, 'common.on')}</span>
+          {enabled && (
+            <span className="picker-row-check">
+              <Icon name="fa-check" />
             </span>
           )}
-          <div className="choice-grid">
-            <button
-              className="btn"
-              disabled={exporting !== null}
-              onClick={() => doExport('json')}
-            >
-              {exporting === 'json'
-                ? t(lang, 'common.loading')
-                : t(lang, 'settings.export.download_json')}
-            </button>
-            <button
-              className="btn"
-              disabled={exporting !== null}
-              onClick={() => doExport('csv')}
-            >
-              {exporting === 'csv'
-                ? t(lang, 'common.loading')
-                : t(lang, 'settings.export.download_csv')}
-            </button>
-          </div>
-        </section>
+        </button>
+        <button
+          className={`picker-row${!enabled ? ' active' : ''}`}
+          onClick={() => onChange({ weekly_digest_enabled: false })}
+        >
+          <span className="picker-row-label">{t(lang, 'common.off')}</span>
+          {!enabled && (
+            <span className="picker-row-check">
+              <Icon name="fa-check" />
+            </span>
+          )}
+        </button>
       </div>
-    </div>
+
+      {enabled && (
+        <>
+          <div className="field">
+            <span className="field-label">
+              {t(lang, 'settings.digest.day')}
+            </span>
+            <div className="picker-list">
+              {DIGEST_DAYS.map(({ dow: v, key }) => (
+                <button
+                  key={v}
+                  className={`picker-row${dow === v ? ' active' : ''}`}
+                  onClick={() => onChange({ weekly_digest_dow: v })}
+                >
+                  <span className="picker-row-label">{t(lang, key)}</span>
+                  {dow === v && (
+                    <span className="picker-row-check">
+                      <Icon name="fa-check" />
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="field">
+            <span className="field-label">
+              {t(lang, 'settings.digest.hour')}
+            </span>
+            <input
+              className="input"
+              type="text"
+              inputMode="numeric"
+              maxLength={2}
+              value={h}
+              onChange={(e) =>
+                setH(e.target.value.replace(/[^0-9]/g, '').slice(0, 2))
+              }
+              placeholder="09"
+            />
+          </div>
+        </>
+      )}
+    </Sheet>
+  );
+}
+
+function ExportPicker({
+  lang,
+  onClose,
+}: {
+  lang: Lang;
+  onClose: () => void;
+}) {
+  const [exporting, setExporting] = useState<'json' | 'csv' | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  const download = async (kind: 'json' | 'csv') => {
+    setExporting(kind);
+    setErr(null);
+    try {
+      await downloadExport(
+        kind === 'json'
+          ? '/api/export/data.json'
+          : '/api/export/transactions.csv',
+      );
+      onClose();
+    } catch {
+      setErr(t(lang, 'settings.export.failed'));
+    } finally {
+      setExporting(null);
+    }
+  };
+
+  return (
+    <Sheet title={t(lang, 'settings.export.title')} onClose={onClose}>
+      <p className="hint-text" style={{ marginTop: -4 }}>
+        {t(lang, 'settings.export.subtitle')}
+      </p>
+      {err && <span className="error-text">{err}</span>}
+      <div className="picker-list">
+        <button
+          className="picker-row"
+          disabled={exporting !== null}
+          onClick={() => download('json')}
+        >
+          <span className="picker-row-label">
+            {t(lang, 'settings.export.download_json')}
+            <span className="picker-row-hint">JSON</span>
+          </span>
+          {exporting === 'json' && (
+            <span className="picker-row-check">…</span>
+          )}
+        </button>
+        <button
+          className="picker-row"
+          disabled={exporting !== null}
+          onClick={() => download('csv')}
+        >
+          <span className="picker-row-label">
+            {t(lang, 'settings.export.download_csv')}
+            <span className="picker-row-hint">CSV</span>
+          </span>
+          {exporting === 'csv' && (
+            <span className="picker-row-check">…</span>
+          )}
+        </button>
+      </div>
+    </Sheet>
+  );
+}
+
+function ProfilePicker({
+  initial,
+  lang,
+  onSubmit,
+  onClose,
+}: {
+  initial: string;
+  lang: Lang;
+  onSubmit: (name: string) => Promise<void>;
+  onClose: () => void;
+}) {
+  const [name, setName] = useState(initial);
+  const [busy, setBusy] = useState(false);
+  return (
+    <Sheet
+      title={t(lang, 'settings.profile.edit')}
+      onClose={onClose}
+      footer={
+        <button
+          className="btn btn-primary"
+          disabled={busy || name.trim().length === 0}
+          onClick={async () => {
+            setBusy(true);
+            await onSubmit(name.trim());
+            setBusy(false);
+            onClose();
+          }}
+        >
+          {t(lang, 'common.done')}
+        </button>
+      }
+    >
+      <div className="field">
+        <span className="field-label">
+          {t(lang, 'settings.profile.name_label')}
+        </span>
+        <input
+          className="input"
+          value={name}
+          maxLength={64}
+          onChange={(e) => setName(e.target.value)}
+          autoFocus
+        />
+      </div>
+    </Sheet>
   );
 }

@@ -1,7 +1,11 @@
+import { useState } from 'react';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { Icon } from '@/components/Icon';
+import { SwipeableRow } from '@/components/SwipeableRow';
 import { formatMoney } from '@/format';
 import { t } from '@/i18n';
 import { useAppStore } from '@/store/app';
+import { useTransactionsStore } from '@/store/transactions';
 import { getCurrencyOrFallback } from '@/util/currency';
 import { formatDate } from '@/util/format-date';
 import type { Account, Category, Transaction } from '@/types';
@@ -10,6 +14,7 @@ type Props = {
   tx: Transaction;
   accounts: Account[];
   categories: Category[];
+  onDeleted?: () => void;
 };
 
 const TYPE_FALLBACK_ICON: Record<Transaction['type'], string> = {
@@ -24,10 +29,12 @@ const TYPE_ACCENT: Record<Transaction['type'], string> = {
   transfer: 'var(--accent-primary)',
 };
 
-export function TransactionRow({ tx, accounts, categories }: Props) {
+export function TransactionRow({ tx, accounts, categories, onDeleted }: Props) {
   const me = useAppStore((s) => s.me!);
   const config = useAppStore((s) => s.config!);
+  const remove = useTransactionsStore((s) => s.remove);
   const lang = me.language_code;
+  const [confirming, setConfirming] = useState(false);
 
   const account = accounts.find((a) => a.id === tx.account_id);
   const toAccount = tx.to_account_id
@@ -58,23 +65,36 @@ export function TransactionRow({ tx, accounts, categories }: Props) {
   );
 
   return (
-    <div className="tx-row glass-card">
-      <div
-        className="tx-row-icon"
-        style={{ color: TYPE_ACCENT[tx.type] }}
-      >
-        <Icon name={icon} size="lg" />
-      </div>
-      <div className="tx-row-meta">
-        <div className="tx-row-title">{title}</div>
-        <div className="tx-row-sub">{subtitleParts.join(' · ')}</div>
-      </div>
-      <div
-        className="tx-row-amount"
-        style={{ color: TYPE_ACCENT[tx.type] }}
-      >
-        {amountText}
-      </div>
-    </div>
+    <>
+      <SwipeableRow onDelete={() => setConfirming(true)}>
+        <div className="tx-row glass-card">
+          <div className="tx-row-icon" style={{ color: TYPE_ACCENT[tx.type] }}>
+            <Icon name={icon} size="lg" />
+          </div>
+          <div className="tx-row-meta">
+            <div className="tx-row-title">{title}</div>
+            <div className="tx-row-sub">{subtitleParts.join(' · ')}</div>
+          </div>
+          <div className="tx-row-amount" style={{ color: TYPE_ACCENT[tx.type] }}>
+            {amountText}
+          </div>
+        </div>
+      </SwipeableRow>
+      {confirming && (
+        <ConfirmDialog
+          title={t(lang, 'confirm.delete_tx.title')}
+          message={t(lang, 'confirm.delete_tx.body')}
+          confirmLabel={t(lang, 'confirm.delete')}
+          cancelLabel={t(lang, 'confirm.cancel')}
+          destructive
+          onCancel={() => setConfirming(false)}
+          onConfirm={async () => {
+            setConfirming(false);
+            await remove(tx.id);
+            onDeleted?.();
+          }}
+        />
+      )}
+    </>
   );
 }

@@ -92,6 +92,7 @@ export type AccountCreatePayload = {
 
 export type AccountPatchPayload = Partial<{
   name: string;
+  type: AccountType;
   icon: string;
   color: string | null;
   is_default: boolean;
@@ -295,6 +296,7 @@ export type RecurringCreatePayload = {
 };
 
 export type UserPatchPayload = Partial<{
+  display_name: string;
   language_code: Lang;
   calendar_system: CalendarSystem;
   timezone: string;

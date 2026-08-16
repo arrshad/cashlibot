@@ -10,7 +10,6 @@ export type Route =
   | { name: 'goals' }
   | { name: 'add-goal' }
   | { name: 'contribute-goal'; goalId: string }
-  | { name: 'stats' }
   | { name: 'reminders' }
   | { name: 'add-reminder' }
   | { name: 'recurring' }

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Icon } from '@/components/Icon';
+import { Sheet } from '@/components/Sheet';
 import { t } from '@/i18n';
 import { useAppStore } from '@/store/app';
 import { useNavStore } from '@/store/nav';
@@ -65,102 +65,84 @@ export function AddReminder() {
   };
 
   return (
-    <div className="app-shell">
-      <div className="app-frame">
-        <div className="glass-card" style={{ padding: 22 }}>
-          <div className="step">
-            <div className="page-header">
-              <button
-                className="icon-btn"
-                onClick={() => go({ name: 'reminders' })}
-                aria-label={t(lang, 'common.back')}
-              >
-                <Icon name="fa-arrow-left" />
-              </button>
-              <h2 className="step-title">{t(lang, 'reminder.add.title')}</h2>
-            </div>
+    <Sheet
+      title={t(lang, 'reminder.add.title')}
+      onClose={() => go({ name: 'reminders' })}
+      footer={
+        <button
+          className="btn btn-primary"
+          disabled={!canSubmit}
+          onClick={submit}
+        >
+          {t(lang, 'reminder.add.submit')}
+        </button>
+      }
+    >
+      <div className="field">
+        <span className="field-label">{t(lang, 'reminder.add.title_label')}</span>
+        <input
+          className="input"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder={t(lang, 'reminder.add.title_placeholder')}
+          maxLength={200}
+          autoFocus
+        />
+      </div>
 
-            <div className="field">
-              <span className="field-label">{t(lang, 'reminder.add.title_label')}</span>
-              <input
-                className="input"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder={t(lang, 'reminder.add.title_placeholder')}
-                maxLength={200}
-                autoFocus
-              />
-            </div>
+      <div className="field">
+        <span className="field-label">{t(lang, 'reminder.add.due_label')}</span>
+        <input
+          className="input"
+          type="datetime-local"
+          value={dueAt}
+          onChange={(e) => setDueAt(e.target.value)}
+        />
+      </div>
 
-            <div className="field">
-              <span className="field-label">{t(lang, 'reminder.add.due_label')}</span>
-              <input
-                className="input"
-                type="datetime-local"
-                value={dueAt}
-                onChange={(e) => setDueAt(e.target.value)}
-              />
-            </div>
-
-            <div className="field">
-              <span className="field-label">{t(lang, 'reminder.add.type_label')}</span>
-              <div className="choice-grid">
-                {TYPES.map((t2) => (
-                  <button
-                    key={t2}
-                    className={`btn ${reminderType === t2 ? 'btn-selected' : ''}`}
-                    onClick={() => setReminderType(t2)}
-                  >
-                    {t(lang, `reminder.type.${t2}`)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="field">
-              <span className="field-label">{t(lang, 'reminder.add.repeat_label')}</span>
-              <div className="choice-grid">
-                {REPEATS.map((f) => (
-                  <button
-                    key={f ?? 'none'}
-                    className={`btn ${repeat === f ? 'btn-selected' : ''}`}
-                    onClick={() => setRepeat(f)}
-                  >
-                    {f === null
-                      ? t(lang, 'reminder.frequency.none')
-                      : t(lang, `reminder.frequency.${f}`)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="field">
-              <span className="field-label">{t(lang, 'reminder.add.description_label')}</span>
-              <input
-                className="input"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                maxLength={1000}
-              />
-            </div>
-
-            {error && <span className="error-text">{error}</span>}
-
-            <div className="step-footer">
-              <button className="btn btn-ghost" onClick={() => go({ name: 'reminders' })}>
-                {t(lang, 'common.back')}
-              </button>
-              <button
-                className="btn btn-primary"
-                disabled={!canSubmit}
-                onClick={submit}
-              >
-                {t(lang, 'reminder.add.submit')}
-              </button>
-            </div>
-          </div>
+      <div className="field">
+        <span className="field-label">{t(lang, 'reminder.add.type_label')}</span>
+        <div className="choice-grid">
+          {TYPES.map((t2) => (
+            <button
+              key={t2}
+              className={`btn ${reminderType === t2 ? 'btn-selected' : ''}`}
+              onClick={() => setReminderType(t2)}
+            >
+              {t(lang, `reminder.type.${t2}`)}
+            </button>
+          ))}
         </div>
       </div>
-    </div>
+
+      <div className="field">
+        <span className="field-label">{t(lang, 'reminder.add.repeat_label')}</span>
+        <div className="choice-grid">
+          {REPEATS.map((f) => (
+            <button
+              key={f ?? 'none'}
+              className={`btn ${repeat === f ? 'btn-selected' : ''}`}
+              onClick={() => setRepeat(f)}
+            >
+              {f === null
+                ? t(lang, 'reminder.frequency.none')
+                : t(lang, `reminder.frequency.${f}`)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="field">
+        <span className="field-label">{t(lang, 'reminder.add.description_label')}</span>
+        <input
+          className="input"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          maxLength={1000}
+        />
+      </div>
+
+      {error && <span className="error-text">{error}</span>}
+    </Sheet>
   );
 }

@@ -30,7 +30,32 @@ declare global {
   }
 }
 
+function installDevMock(): void {
+  if (!import.meta.env.DEV) return;
+  if (window.Telegram?.WebApp?.initData) return;
+  const user = { id: 1000000, first_name: 'Dev', language_code: 'en' };
+  const authDate = Math.floor(Date.now() / 1000);
+  const initData =
+    `user=${encodeURIComponent(JSON.stringify(user))}` +
+    `&auth_date=${authDate}` +
+    `&hash=dev`;
+  window.Telegram = {
+    WebApp: {
+      initData,
+      themeParams: {},
+      colorScheme: 'dark',
+      ready: () => {},
+      expand: () => {},
+      close: () => {},
+    },
+  };
+}
+
+// Fire at module load so the mock is in place before React first renders.
+installDevMock();
+
 export function getTelegramWebApp(): TelegramWebApp | undefined {
+  installDevMock();
   return window.Telegram?.WebApp;
 }
 

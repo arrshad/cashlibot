@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Icon } from '@/components/Icon';
+import { Sheet } from '@/components/Sheet';
 import { t } from '@/i18n';
 import { useAppStore } from '@/store/app';
 import { useFriendsStore } from '@/store/friends';
@@ -108,138 +108,116 @@ export function AddSharedExpense({ friendId }: Props) {
     : ({ name: 'friends' } as const);
 
   return (
-    <div className="app-shell">
-      <div className="app-frame">
-        <div className="glass-card" style={{ padding: 22 }}>
-          <div className="step">
-            <div className="page-header">
-              <button
-                className="icon-btn"
-                onClick={() => go(backTarget)}
-                aria-label={t(lang, 'common.back')}
+    <Sheet
+      title={t(lang, 'shared.add_title')}
+      onClose={() => go(backTarget)}
+      footer={
+        <button
+          className="btn btn-primary"
+          disabled={!canSubmit}
+          onClick={submit}
+        >
+          {t(lang, 'shared.add.submit')}
+        </button>
+      }
+    >
+      <div className="field">
+        <span className="field-label">{t(lang, 'shared.add.description')}</span>
+        <input
+          className="input"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder={t(lang, 'shared.add.description_placeholder')}
+          maxLength={200}
+          autoFocus
+        />
+      </div>
+
+      <div className="field">
+        <span className="field-label">{t(lang, 'shared.add.total')}</span>
+        <input
+          className="input input-amount"
+          inputMode="decimal"
+          value={total}
+          onChange={(e) => setTotal(e.target.value.replace(',', '.'))}
+          placeholder="0"
+        />
+      </div>
+
+      <div className="field">
+        <span className="field-label">
+          {t(lang, 'onboarding.account.currency_label')}
+        </span>
+        <div className="choice-grid">
+          {config.currencies.map((c) => (
+            <button
+              key={c.code}
+              className={`btn ${currency === c.code ? 'btn-selected' : ''}`}
+              onClick={() => setCurrency(c.code)}
+            >
+              <span style={{ fontWeight: 600 }}>{c.code}</span>
+              <span
+                style={{ color: 'var(--text-secondary)', marginInlineStart: 8 }}
               >
-                <Icon name="fa-arrow-left" />
-              </button>
-              <h2 className="step-title">{t(lang, 'shared.add_title')}</h2>
-            </div>
-
-            <div className="field">
-              <span className="field-label">{t(lang, 'shared.add.description')}</span>
-              <input
-                className="input"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder={t(lang, 'shared.add.description_placeholder')}
-                maxLength={200}
-                autoFocus
-              />
-            </div>
-
-            <div className="field">
-              <span className="field-label">{t(lang, 'shared.add.total')}</span>
-              <input
-                className="input input-amount"
-                inputMode="decimal"
-                value={total}
-                onChange={(e) => setTotal(e.target.value.replace(',', '.'))}
-                placeholder="0"
-              />
-            </div>
-
-            <div className="field">
-              <span className="field-label">
-                {t(lang, 'onboarding.account.currency_label')}
+                {c.symbol}
               </span>
-              <div className="choice-grid">
-                {config.currencies.map((c) => (
-                  <button
-                    key={c.code}
-                    className={`btn ${currency === c.code ? 'btn-selected' : ''}`}
-                    onClick={() => setCurrency(c.code)}
-                  >
-                    <span style={{ fontWeight: 600 }}>{c.code}</span>
-                    <span
-                      style={{ color: 'var(--text-secondary)', marginInlineStart: 8 }}
-                    >
-                      {c.symbol}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="field">
-              <span className="field-label">{t(lang, 'shared.add.participants')}</span>
-              {friends.length === 0 ? (
-                <span className="hint-text">
-                  {t(lang, 'shared.add.no_friends')}
-                </span>
-              ) : (
-                <div className="choice-grid">
-                  {friends.map((f) => (
-                    <button
-                      key={f.peer.telegram_id}
-                      className={`btn ${
-                        picked.has(f.peer.telegram_id) ? 'btn-selected' : ''
-                      }`}
-                      onClick={() => toggle(f.peer.telegram_id)}
-                    >
-                      {f.peer.display_name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {picked.size > 0 && (
-              <div className="field">
-                <span className="field-label">
-                  {t(lang, 'shared.add.per_person')}
-                </span>
-                <p className="hint-text">
-                  {t(lang, 'shared.add.per_person_hint', {
-                    amount: evenPerPerson,
-                  })}
-                </p>
-                <div className="split-inputs">
-                  {Array.from(picked).map((uid) => {
-                    const friend = friends.find((f) => f.peer.telegram_id === uid);
-                    return (
-                      <div key={uid} className="split-input-row">
-                        <span className="split-input-name">
-                          {friend?.peer.display_name ?? uid}
-                        </span>
-                        <input
-                          className="input"
-                          inputMode="decimal"
-                          placeholder={evenPerPerson}
-                          value={amounts[uid] ?? ''}
-                          onChange={(e) => setAmount(uid, e.target.value)}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {error && <span className="error-text">{error}</span>}
-
-            <div className="step-footer">
-              <button className="btn btn-ghost" onClick={() => go(backTarget)}>
-                {t(lang, 'common.back')}
-              </button>
-              <button
-                className="btn btn-primary"
-                disabled={!canSubmit}
-                onClick={submit}
-              >
-                {t(lang, 'shared.add.submit')}
-              </button>
-            </div>
-          </div>
+            </button>
+          ))}
         </div>
       </div>
-    </div>
+
+      <div className="field">
+        <span className="field-label">{t(lang, 'shared.add.participants')}</span>
+        {friends.length === 0 ? (
+          <span className="hint-text">{t(lang, 'shared.add.no_friends')}</span>
+        ) : (
+          <div className="choice-grid">
+            {friends.map((f) => (
+              <button
+                key={f.peer.telegram_id}
+                className={`btn ${
+                  picked.has(f.peer.telegram_id) ? 'btn-selected' : ''
+                }`}
+                onClick={() => toggle(f.peer.telegram_id)}
+              >
+                {f.peer.display_name}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {picked.size > 0 && (
+        <div className="field">
+          <span className="field-label">
+            {t(lang, 'shared.add.per_person')}
+          </span>
+          <p className="hint-text">
+            {t(lang, 'shared.add.per_person_hint', { amount: evenPerPerson })}
+          </p>
+          <div className="split-inputs">
+            {Array.from(picked).map((uid) => {
+              const friend = friends.find((f) => f.peer.telegram_id === uid);
+              return (
+                <div key={uid} className="split-input-row">
+                  <span className="split-input-name">
+                    {friend?.peer.display_name ?? uid}
+                  </span>
+                  <input
+                    className="input"
+                    inputMode="decimal"
+                    placeholder={evenPerPerson}
+                    value={amounts[uid] ?? ''}
+                    onChange={(e) => setAmount(uid, e.target.value)}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {error && <span className="error-text">{error}</span>}
+    </Sheet>
   );
 }

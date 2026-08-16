@@ -1,27 +1,31 @@
 import { useState } from 'react';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { Icon } from '@/components/Icon';
 import { Sheet } from '@/components/Sheet';
 import { t } from '@/i18n';
 import { useAppStore } from '@/store/app';
 import { useDashboardStore } from '@/store/dashboard';
-import type { AccountType, Lang } from '@/types';
+import type { Account, AccountType, Lang } from '@/types';
 
 type Props = {
+  account: Account;
   lang: Lang;
-  onDone: () => void;
+  onClose: () => void;
 };
 
-// Kept in sync with AccountEditSheet — same choices in the same order.
+// Palette matches the tints defined in globals.css.
 const COLOR_SWATCHES = [
-  '#30d158',
-  '#0a84ff',
-  '#bf5af2',
-  '#ff9f0a',
-  '#ff375f',
-  '#64d2ff',
-  '#ffd60a',
-  '#8e8e93',
+  '#30d158', // green
+  '#0a84ff', // blue
+  '#bf5af2', // purple
+  '#ff9f0a', // orange
+  '#ff375f', // pink
+  '#64d2ff', // teal
+  '#ffd60a', // yellow
+  '#8e8e93', // graphite
 ];
+
+// A curated set of Font Awesome glyphs that make sense for accounts.
 const ICON_CHOICES = [
   'fa-wallet',
   'fa-credit-card',
@@ -34,6 +38,7 @@ const ICON_CHOICES = [
   'fa-vault',
   'fa-money-check',
 ];
+
 const ACCOUNT_TYPES: AccountType[] = [
   'cash',
   'card',
@@ -44,75 +49,87 @@ const ACCOUNT_TYPES: AccountType[] = [
   'savings',
 ];
 
-export function AddAccount({ lang, onDone }: Props) {
-  const me = useAppStore((s) => s.me!);
+export function AccountEditSheet({ account, lang, onClose }: Props) {
   const config = useAppStore((s) => s.config!);
-  const create = useDashboardStore((s) => s.createAccount);
   const update = useDashboardStore((s) => s.updateAccount);
+  const archive = useDashboardStore((s) => s.archiveAccount);
 
-  const [name, setName] = useState('');
-  const [icon, setIcon] = useState('fa-wallet');
-  const [color, setColor] = useState<string | null>(null);
-  const [type, setType] = useState<AccountType>('cash');
-  const [currency, setCurrency] = useState(me.default_currency ?? 'USD');
-  const [submitting, setSubmitting] = useState(false);
+  const [name, setName] = useState(account.name);
+  const [icon, setIcon] = useState(account.icon || 'fa-wallet');
+  const [color, setColor] = useState<string | null>(account.color ?? null);
+  const [type, setType] = useState<AccountType>(account.type);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const canSubmit = name.trim().length > 0 && !submitting;
+  const dirty =
+    name.trim() !== account.name ||
+    icon !== (account.icon || 'fa-wallet') ||
+    color !== (account.color ?? null) ||
+    type !== account.type;
 
-  const submit = async () => {
-    setSubmitting(true);
+  const save = async () => {
+    if (!dirty) {
+      onClose();
+      return;
+    }
+    setSaving(true);
     setError(null);
     try {
-      const created = await create({ name: name.trim(), type, currency });
-      // Follow up with icon/color since the create endpoint doesn't accept them.
-      if (icon !== 'fa-wallet' || color !== null) {
-        await update(created.id, { icon, color });
-      }
-      onDone();
+      await update(account.id, {
+        name: name.trim(),
+        icon,
+        color,
+        type,
+      });
+      onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'failed to create');
+      setError(err instanceof Error ? err.message : 'failed to save');
     } finally {
-      setSubmitting(false);
+      setSaving(false);
+    }
+  };
+
+  const [confirming, setConfirming] = useState(false);
+  const runDelete = async () => {
+    setSaving(true);
+    try {
+      await archive(account.id);
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'failed to delete');
+      setSaving(false);
     }
   };
 
   return (
     <Sheet
-      title={t(lang, 'dashboard.add_account.title')}
-      onClose={onDone}
+      title={t(lang, 'account.edit.title')}
+      onClose={onClose}
       footer={
         <button
           className="btn btn-primary"
-          disabled={!canSubmit}
-          onClick={submit}
+          onClick={save}
+          disabled={saving || name.trim().length === 0}
         >
-          {t(lang, 'dashboard.add_account.submit')}
+          {saving ? t(lang, 'settings.saving') : t(lang, 'common.done')}
         </button>
       }
     >
       {error && <span className="error-text">{error}</span>}
 
       <div className="field">
-        <span className="field-label">
-          {t(lang, 'onboarding.account.name_label')}
-        </span>
+        <label className="field-label">{t(lang, 'account.edit.name')}</label>
         <input
           className="input"
-          placeholder={t(lang, 'onboarding.account.name_placeholder')}
           value={name}
           onChange={(e) => setName(e.target.value)}
           maxLength={40}
-          autoFocus
         />
       </div>
 
       <div className="field">
         <span className="field-label">{t(lang, 'account.edit.icon')}</span>
-        <div
-          className="choice-grid"
-          style={{ gridTemplateColumns: 'repeat(5, minmax(0, 1fr))' }}
-        >
+        <div className="choice-grid" style={{ gridTemplateColumns: 'repeat(5, minmax(0, 1fr))' }}>
           {ICON_CHOICES.map((glyph) => (
             <button
               key={glyph}
@@ -132,10 +149,7 @@ export function AddAccount({ lang, onDone }: Props) {
         <div className="swatch-row">
           <button
             className={`swatch${color === null ? ' selected' : ''}`}
-            style={{
-              background: 'transparent',
-              border: '2px dashed rgba(255,255,255,0.3)',
-            }}
+            style={{ background: 'transparent', border: '2px dashed rgba(255,255,255,0.3)' }}
             onClick={() => setColor(null)}
             aria-label={t(lang, 'account.edit.color_none')}
           />
@@ -153,10 +167,7 @@ export function AddAccount({ lang, onDone }: Props) {
 
       <div className="field">
         <span className="field-label">{t(lang, 'account.edit.type')}</span>
-        <div
-          className="choice-grid"
-          style={{ gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}
-        >
+        <div className="choice-grid" style={{ gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
           {ACCOUNT_TYPES.map((tp) => {
             const opt = config.account_types.find((a) => a.value === tp);
             return (
@@ -174,31 +185,28 @@ export function AddAccount({ lang, onDone }: Props) {
         </div>
       </div>
 
-      <div className="field">
-        <span className="field-label">
-          {t(lang, 'onboarding.account.currency_label')}
-        </span>
-        <div className="choice-grid">
-          {config.currencies.map((c) => (
-            <button
-              key={c.code}
-              className={`btn ${currency === c.code ? 'btn-selected' : ''}`}
-              onClick={() => setCurrency(c.code)}
-            >
-              <span style={{ fontWeight: 600 }}>{c.code}</span>
-              <span
-                style={{
-                  color: 'var(--text-secondary)',
-                  marginInlineStart: 8,
-                }}
-              >
-                {c.symbol}
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
-
+      <button
+        className="btn"
+        onClick={() => setConfirming(true)}
+        disabled={saving}
+        style={{ color: 'var(--accent-danger)', justifyContent: 'center' }}
+      >
+        <Icon name="fa-trash" /> {t(lang, 'account.edit.delete')}
+      </button>
+      {confirming && (
+        <ConfirmDialog
+          title={t(lang, 'account.edit.delete')}
+          message={t(lang, 'account.edit.delete_confirm')}
+          confirmLabel={t(lang, 'confirm.delete')}
+          cancelLabel={t(lang, 'confirm.cancel')}
+          destructive
+          onCancel={() => setConfirming(false)}
+          onConfirm={() => {
+            setConfirming(false);
+            void runDelete();
+          }}
+        />
+      )}
     </Sheet>
   );
 }

@@ -20,5 +20,17 @@ export default defineConfig({
     },
     // Trust the proxy in front (Traefik → external nginx / Cloudflare).
     allowedHosts: true,
+    // Same-origin proxy in local dev so the browser hits :5173 for both
+    // static assets and API calls. Avoids CORS entirely.
+    proxy: {
+      '/api': {
+        target: 'http://api:8000',
+        changeOrigin: true,
+      },
+      '/health': {
+        target: 'http://api:8000',
+        changeOrigin: true,
+      },
+    },
   },
 });

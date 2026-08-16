@@ -52,6 +52,7 @@ class UserOut(BaseModel):
 
 
 class UserPatchIn(BaseModel):
+    display_name: str | None = Field(default=None, min_length=1, max_length=64)
     language_code: Literal["en", "fa"] | None = None
     calendar_system: Literal["gregorian", "jalali", "hijri"] | None = None
     timezone: str | None = None
