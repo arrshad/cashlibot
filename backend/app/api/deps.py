@@ -52,7 +52,11 @@ def get_init_data(
     init_data = _extract_init_data(authorization)
     settings = get_settings()
     try:
-        return validate_init_data(init_data, settings.telegram_bot_token)
+        return validate_init_data(
+            init_data,
+            settings.telegram_bot_token,
+            allow_unsigned=settings.dev_mode,
+        )
     except InvalidInitData as exc:
         raise HTTPException(
             status.HTTP_401_UNAUTHORIZED, f"invalid init data: {exc}"
@@ -64,11 +68,19 @@ async def get_current_user(
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> User:
     """Load (or create on first call) the User backing this initData."""
-    user, _ = await get_or_create_user(
+    user, created = await get_or_create_user(
         session,
         telegram_id=init.user.id,
         username=init.user.username,
         display_name=init.user.full_name,
         language_hint=init.user.language_code,
     )
+    # In dev preview mode, fast-forward the newly-created stub past onboarding
+    # so you land straight on the dashboard instead of the setup flow.
+    if created and get_settings().dev_mode:
+        user.onboarding_completed = True
+        user.default_currency = user.default_currency or "USD"
+        user.timezone = user.timezone or "UTC"
+        session.add(user)
+        await session.flush()
     return user

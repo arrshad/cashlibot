@@ -1,11 +1,13 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Icon } from '@/components/Icon';
 import { t } from '@/i18n';
 import { useAppStore } from '@/store/app';
 import { useDashboardStore } from '@/store/dashboard';
 import { useNavStore } from '@/store/nav';
+import { pickGreeting } from '@/util/greeting';
+import type { Account } from '@/types';
 import { AccountCard } from './dashboard/AccountCard';
-import { TotalsRow } from './dashboard/TotalsRow';
+import { AccountEditSheet } from './dashboard/AccountEditSheet';
 import { TransactionRow } from './transactions/TransactionRow';
 
 export function Dashboard() {
@@ -17,37 +19,31 @@ export function Dashboard() {
   const { accounts, summary, loading, error, load } = useDashboardStore();
   const go = useNavStore((s) => s.go);
 
+  const [editing, setEditing] = useState<Account | null>(null);
+
   useEffect(() => {
     if (!summary) load();
   }, [summary, load]);
 
+  const greeting = useMemo(() => pickGreeting(lang), [lang]);
   const recentTx = summary?.recent_transactions ?? [];
 
   return (
-    <div className="app-shell">
+    <div className="app-shell has-tabbar">
       <div className="app-frame">
-        <div className="dashboard-topbar">
-          <header className="dashboard-greeting" style={{ padding: 0 }}>
-            <span className="hint-text">{t(lang, 'dashboard.greeting.eyebrow')}</span>
-            <h1 className="hero-title">{me.display_name}</h1>
-          </header>
-          <div className="dashboard-topbar-actions">
-            <button
-              className="credits-chip"
-              onClick={() => go({ name: 'credits' })}
-              aria-label={t(lang, 'dashboard.credits_cta')}
-            >
-              <Icon name="fa-coins" />
-              <span>{me.credit_balance.toLocaleString()}</span>
-            </button>
-            <button
-              className="icon-btn"
-              onClick={() => go({ name: 'settings' })}
-              aria-label={t(lang, 'settings.title')}
-            >
-              <Icon name="fa-gear" />
-            </button>
-          </div>
+
+        <div className="home-top">
+          <span className="home-greet-line">
+            {greeting}, {me.display_name}
+          </span>
+          <button
+            className="credit-chip"
+            onClick={() => go({ name: 'credits' })}
+            aria-label={t(lang, 'dashboard.credits_cta')}
+          >
+            <Icon name="fa-coins" />
+            <span>{me.credit_balance.toLocaleString()}</span>
+          </button>
         </div>
 
         {error && (
@@ -63,95 +59,36 @@ export function Dashboard() {
           </div>
         )}
 
-        {summary && (
-          <TotalsRow
-            totals={summary.totals_by_currency}
-            currencies={config.currencies}
-            defaultCurrency={summary.default_currency}
-            lang={lang}
-          />
-        )}
-
-        <button
-          className="btn btn-primary quick-add-cta"
-          onClick={() => go({ name: 'add-tx' })}
-        >
-          <Icon name="fa-plus" /> {t(lang, 'dashboard.add_tx_cta')}
-        </button>
-
-        <div className="dashboard-links">
-          <button
-            className="btn btn-ghost"
-            onClick={() => go({ name: 'budgets' })}
-          >
-            {t(lang, 'dashboard.budgets_cta')}
-          </button>
-          <button
-            className="btn btn-ghost"
-            onClick={() => go({ name: 'goals' })}
-          >
-            {t(lang, 'dashboard.goals_cta')}
-          </button>
-          <button
-            className="btn btn-ghost"
-            onClick={() => go({ name: 'reminders' })}
-          >
-            {t(lang, 'dashboard.reminders_cta')}
-          </button>
-          <button
-            className="btn btn-ghost"
-            onClick={() => go({ name: 'recurring' })}
-          >
-            {t(lang, 'dashboard.recurring_cta')}
-          </button>
-          <button
-            className="btn btn-ghost"
-            onClick={() => go({ name: 'friends' })}
-          >
-            {t(lang, 'dashboard.friends_cta')}
-          </button>
-          <button
-            className="btn btn-ghost"
-            onClick={() => go({ name: 'reports' })}
-          >
-            {t(lang, 'dashboard.reports_cta')}
-          </button>
-          <button
-            className="btn btn-ghost"
-            onClick={() => go({ name: 'stats' })}
-          >
-            {t(lang, 'dashboard.stats_cta')}
-          </button>
-        </div>
 
         <section className="section">
           <div className="section-header">
             <h3 className="section-title">{t(lang, 'dashboard.accounts.title')}</h3>
-            <button className="text-btn" onClick={() => go({ name: 'add-account' })}>
-              <Icon name="fa-plus" /> {t(lang, 'dashboard.accounts.add')}
-            </button>
           </div>
-
           {loading && accounts.length === 0 ? (
             <div className="glass-card" style={{ padding: 16 }}>
               {t(lang, 'common.loading')}
             </div>
-          ) : accounts.length === 0 ? (
-            <div className="glass-card" style={{ padding: 16 }}>
-              <span className="hint-text">
-                {t(lang, 'dashboard.accounts.empty')}
-              </span>
-            </div>
           ) : (
-            <div className="account-list">
+            <div className="acct-carousel">
               {accounts.map((a) => (
                 <AccountCard
                   key={a.id}
                   account={a}
                   currencies={config.currencies}
                   lang={lang}
+                  onEdit={setEditing}
                 />
               ))}
+              <button
+                className="acct-card-empty"
+                onClick={() => go({ name: 'add-account' })}
+                aria-label={t(lang, 'dashboard.accounts.add_card')}
+              >
+                <span className="acct-card-empty-plus">
+                  <Icon name="fa-plus" />
+                </span>
+                <span>{t(lang, 'dashboard.accounts.add_card')}</span>
+              </button>
             </div>
           )}
         </section>
@@ -174,7 +111,7 @@ export function Dashboard() {
               <span className="hint-text">{t(lang, 'dashboard.recent.empty')}</span>
             </div>
           ) : (
-            <div className="tx-list">
+            <div className="glass-card tx-group-card" style={{ padding: '4px 0' }}>
               {recentTx.map((tx) => (
                 <TransactionRow
                   key={tx.id}
@@ -187,6 +124,14 @@ export function Dashboard() {
           )}
         </section>
       </div>
+
+      {editing && (
+        <AccountEditSheet
+          account={editing}
+          lang={lang}
+          onClose={() => setEditing(null)}
+        />
+      )}
     </div>
   );
 }

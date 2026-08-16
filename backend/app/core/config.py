@@ -51,6 +51,10 @@ class Settings(BaseSettings):
     # Migration toggle for entrypoint scripts
     run_migrations: bool = Field(default=False)
 
+    # Dev preview: when true, the Mini App auth accepts initData with hash="dev"
+    # (no HMAC check). Never enable in prod.
+    dev_mode: bool = False
+
     @property
     def database_url(self) -> str:
         return (

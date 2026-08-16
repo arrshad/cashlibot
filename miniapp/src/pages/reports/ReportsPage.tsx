@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Bar,
   BarChart,
@@ -12,11 +12,11 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { Icon } from '@/components/Icon';
+import { Segmented } from '@/components/Segmented';
 import { formatMoney } from '@/format';
 import { t } from '@/i18n';
+import { StatsBody } from '@/pages/gamification/StatsBody';
 import { useAppStore } from '@/store/app';
-import { useNavStore } from '@/store/nav';
 import { useReportsStore } from '@/store/reports';
 import { getCurrencyOrFallback } from '@/util/currency';
 import type {
@@ -26,6 +26,8 @@ import type {
   MonthBucket,
   ReportPeriod,
 } from '@/types';
+
+type Tab = 'reports' | 'stats';
 
 const PERIODS: ReportPeriod[] = ['week', 'month', 'quarter', 'year'];
 
@@ -61,57 +63,64 @@ export function ReportsPage() {
   const me = useAppStore((s) => s.me!);
   const lang = me.language_code;
   const { summary, period, loading, error, load } = useReportsStore();
-  const go = useNavStore((s) => s.go);
+  const [tab, setTab] = useState<Tab>('reports');
 
   useEffect(() => {
     load();
   }, [load]);
 
   return (
-    <div className="app-shell">
+    <div className="app-shell has-tabbar">
       <div className="app-frame">
-        <div className="page-header">
-          <button
-            className="icon-btn"
-            onClick={() => go({ name: 'dashboard' })}
-            aria-label={t(lang, 'common.back')}
-          >
-            <Icon name="fa-arrow-left" />
-          </button>
-          <h2 className="step-title">{t(lang, 'reports.title')}</h2>
-        </div>
+        <h2 className="step-title" style={{ margin: '4px 4px 4px' }}>
+          {t(lang, 'reports.title')}
+        </h2>
 
-        <div className="dashboard-links">
-          {PERIODS.map((p) => (
-            <button
-              key={p}
-              className={`btn ${period === p ? 'btn-selected' : 'btn-ghost'}`}
-              onClick={() => load(p)}
-            >
-              {t(lang, `reports.period.${p}`)}
-            </button>
-          ))}
-        </div>
+        <Segmented
+          value={tab}
+          onChange={setTab}
+          options={[
+            { value: 'reports', label: t(lang, 'reports.tab.reports') },
+            { value: 'stats', label: t(lang, 'reports.tab.stats') },
+          ]}
+        />
 
-        {error && (
-          <div className="glass-card" style={{ padding: 16 }}>
-            <span className="error-text">{error}</span>
-          </div>
-        )}
-
-        {loading && !summary && (
-          <div className="glass-card" style={{ padding: 16 }}>
-            {t(lang, 'common.loading')}
-          </div>
-        )}
-
-        {summary && (
+        {tab === 'reports' ? (
           <>
-            <BehaviorCard score={summary.behavior_score} lang={lang} />
-            <MonthlyDeltaCard summary={summary} lang={lang} />
-            <CategoryBreakdownCard rows={summary.by_category} lang={lang} />
-            <TrendCard trend={summary.monthly_trend} lang={lang} />
+            <div className="choice-grid" style={{ gridTemplateColumns: 'repeat(4, minmax(0,1fr))' }}>
+              {PERIODS.map((p) => (
+                <button
+                  key={p}
+                  className={`btn ${period === p ? 'btn-selected' : 'btn-ghost'}`}
+                  onClick={() => load(p)}
+                  style={{ padding: '10px 4px', fontSize: 13 }}
+                >
+                  {t(lang, `reports.period.${p}`)}
+                </button>
+              ))}
+            </div>
+
+            {error && (
+              <div className="glass-card" style={{ padding: 16 }}>
+                <span className="error-text">{error}</span>
+              </div>
+            )}
+            {loading && !summary && (
+              <div className="glass-card" style={{ padding: 16 }}>
+                {t(lang, 'common.loading')}
+              </div>
+            )}
+            {summary && (
+              <>
+                <BehaviorCard score={summary.behavior_score} lang={lang} />
+                <MonthlyDeltaCard summary={summary} lang={lang} />
+                <CategoryBreakdownCard rows={summary.by_category} lang={lang} />
+                <TrendCard trend={summary.monthly_trend} lang={lang} />
+              </>
+            )}
           </>
+        ) : (
+          <StatsBody />
         )}
       </div>
     </div>

@@ -4,8 +4,14 @@ import {
   createAccount as apiCreateAccount,
   fetchAccounts,
   fetchDashboardSummary,
+  updateAccount as apiUpdateAccount,
 } from '@/api/client';
-import type { Account, AccountCreatePayload, DashboardSummary } from '@/types';
+import type {
+  Account,
+  AccountCreatePayload,
+  AccountPatchPayload,
+  DashboardSummary,
+} from '@/types';
 
 type DashboardStore = {
   accounts: Account[];
@@ -14,6 +20,7 @@ type DashboardStore = {
   error: string | null;
   load: () => Promise<void>;
   createAccount: (payload: AccountCreatePayload) => Promise<Account>;
+  updateAccount: (id: string, payload: AccountPatchPayload) => Promise<Account>;
   archiveAccount: (id: string) => Promise<void>;
 };
 
@@ -43,6 +50,14 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
     const summary = await fetchDashboardSummary();
     set({ accounts: [...get().accounts, account], summary });
     return account;
+  },
+
+  updateAccount: async (id, payload) => {
+    const updated = await apiUpdateAccount(id, payload);
+    set({
+      accounts: get().accounts.map((a) => (a.id === id ? updated : a)),
+    });
+    return updated;
   },
 
   archiveAccount: async (id) => {

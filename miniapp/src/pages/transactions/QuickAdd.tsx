@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Icon } from '@/components/Icon';
+import { Segmented } from '@/components/Segmented';
+import { Sheet } from '@/components/Sheet';
 import { t } from '@/i18n';
 import { useAppStore } from '@/store/app';
 import { useDashboardStore } from '@/store/dashboard';
@@ -70,144 +72,125 @@ export function QuickAdd() {
     }
   };
 
+  const close = () => go({ name: 'dashboard' });
+
   return (
-    <div className="app-shell">
-      <div className="app-frame">
-        <div className="glass-card" style={{ padding: 22 }}>
-          <div className="step">
-            <div className="page-header">
+    <Sheet
+      title={t(lang, 'tx.add.title')}
+      onClose={close}
+      footer={
+        <button
+          className="btn btn-primary"
+          disabled={!canSubmit}
+          onClick={submit}
+        >
+          {t(lang, 'tx.add.submit')}
+        </button>
+      }
+    >
+        <Segmented
+          value={type}
+          onChange={(v) => setType(v as TransactionType)}
+          options={TYPES.map((v) => ({
+            value: v,
+            label: t(lang, `tx.type.${v}`),
+          }))}
+        />
+
+        <div className="field">
+          <span className="field-label">{t(lang, 'tx.add.amount_label')}</span>
+          <input
+            className="input input-amount"
+            inputMode="decimal"
+            placeholder="0"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value.replace(',', '.'))}
+            autoFocus
+          />
+        </div>
+
+        <div className="field">
+          <span className="field-label">
+            {type === 'transfer'
+              ? t(lang, 'tx.add.from_account_label')
+              : t(lang, 'tx.add.account_label')}
+          </span>
+          <div className="choice-grid">
+            {activeAccounts.map((a) => (
               <button
-                className="icon-btn"
-                onClick={() => go({ name: 'dashboard' })}
-                aria-label={t(lang, 'common.back')}
+                key={a.id}
+                className={`btn ${accountId === a.id ? 'btn-selected' : ''}`}
+                onClick={() => setAccountId(a.id)}
               >
-                <Icon name="fa-arrow-left" />
+                <Icon name={a.icon} />
+                <span style={{ marginInlineStart: 8 }}>{a.name}</span>
               </button>
-              <h2 className="step-title">{t(lang, 'tx.add.title')}</h2>
-            </div>
+            ))}
+          </div>
+        </div>
 
-            <div className="type-toggle">
-              {TYPES.map((v) => (
-                <button
-                  key={v}
-                  className={`type-toggle-btn ${type === v ? 'type-toggle-btn-active' : ''}`}
-                  onClick={() => setType(v)}
-                >
-                  {t(lang, `tx.type.${v}`)}
-                </button>
-              ))}
-            </div>
-
-            <div className="field">
-              <span className="field-label">{t(lang, 'tx.add.amount_label')}</span>
-              <input
-                className="input input-amount"
-                inputMode="decimal"
-                placeholder="0"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value.replace(',', '.'))}
-                autoFocus
-              />
-            </div>
-
-            <div className="field">
-              <span className="field-label">
-                {type === 'transfer'
-                  ? t(lang, 'tx.add.from_account_label')
-                  : t(lang, 'tx.add.account_label')}
-              </span>
-              <div className="choice-grid">
-                {activeAccounts.map((a) => (
+        {type === 'transfer' && (
+          <div className="field">
+            <span className="field-label">{t(lang, 'tx.add.to_account_label')}</span>
+            <div className="choice-grid">
+              {activeAccounts
+                .filter((a) => a.id !== accountId)
+                .map((a) => (
                   <button
                     key={a.id}
-                    className={`btn ${accountId === a.id ? 'btn-selected' : ''}`}
-                    onClick={() => setAccountId(a.id)}
+                    className={`btn ${toAccountId === a.id ? 'btn-selected' : ''}`}
+                    onClick={() => setToAccountId(a.id)}
                   >
                     <Icon name={a.icon} />
                     <span style={{ marginInlineStart: 8 }}>{a.name}</span>
                   </button>
                 ))}
-              </div>
-            </div>
-
-            {type === 'transfer' && (
-              <div className="field">
-                <span className="field-label">{t(lang, 'tx.add.to_account_label')}</span>
-                <div className="choice-grid">
-                  {activeAccounts
-                    .filter((a) => a.id !== accountId)
-                    .map((a) => (
-                      <button
-                        key={a.id}
-                        className={`btn ${toAccountId === a.id ? 'btn-selected' : ''}`}
-                        onClick={() => setToAccountId(a.id)}
-                      >
-                        <Icon name={a.icon} />
-                        <span style={{ marginInlineStart: 8 }}>{a.name}</span>
-                      </button>
-                    ))}
-                </div>
-              </div>
-            )}
-
-            {type !== 'transfer' && (
-              <div className="field">
-                <span className="field-label">{t(lang, 'tx.add.category_label')}</span>
-                <div className="choice-grid">
-                  {relevantCategories.map((c) => (
-                    <button
-                      key={c.id}
-                      className={`btn ${categoryId === c.id ? 'btn-selected' : ''}`}
-                      onClick={() => setCategoryId(c.id)}
-                    >
-                      <Icon name={c.icon} />
-                      <span style={{ marginInlineStart: 8 }}>{c.name}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {type !== 'transfer' && (
-              <div className="field">
-                <span className="field-label">{t(lang, 'tx.add.merchant_label')}</span>
-                <input
-                  className="input"
-                  value={merchant}
-                  onChange={(e) => setMerchant(e.target.value)}
-                  placeholder={t(lang, 'tx.add.merchant_placeholder')}
-                  maxLength={128}
-                />
-              </div>
-            )}
-
-            <div className="field">
-              <span className="field-label">{t(lang, 'tx.add.description_label')}</span>
-              <input
-                className="input"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                maxLength={500}
-              />
-            </div>
-
-            {error && <span className="error-text">{error}</span>}
-
-            <div className="step-footer">
-              <button className="btn btn-ghost" onClick={() => go({ name: 'dashboard' })}>
-                {t(lang, 'common.back')}
-              </button>
-              <button
-                className="btn btn-primary"
-                disabled={!canSubmit}
-                onClick={submit}
-              >
-                {t(lang, 'tx.add.submit')}
-              </button>
             </div>
           </div>
+        )}
+
+        {type !== 'transfer' && (
+          <div className="field">
+            <span className="field-label">{t(lang, 'tx.add.category_label')}</span>
+            <div className="choice-grid">
+              {relevantCategories.map((c) => (
+                <button
+                  key={c.id}
+                  className={`btn ${categoryId === c.id ? 'btn-selected' : ''}`}
+                  onClick={() => setCategoryId(c.id)}
+                >
+                  <Icon name={c.icon} />
+                  <span style={{ marginInlineStart: 8 }}>{c.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {type !== 'transfer' && (
+          <div className="field">
+            <span className="field-label">{t(lang, 'tx.add.merchant_label')}</span>
+            <input
+              className="input"
+              value={merchant}
+              onChange={(e) => setMerchant(e.target.value)}
+              placeholder={t(lang, 'tx.add.merchant_placeholder')}
+              maxLength={128}
+            />
+          </div>
+        )}
+
+        <div className="field">
+          <span className="field-label">{t(lang, 'tx.add.description_label')}</span>
+          <input
+            className="input"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            maxLength={500}
+          />
         </div>
-      </div>
-    </div>
+
+        {error && <span className="error-text">{error}</span>}
+    </Sheet>
   );
 }

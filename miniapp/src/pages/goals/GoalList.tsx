@@ -17,16 +17,9 @@ export function GoalList() {
   }, [load]);
 
   return (
-    <div className="app-shell">
+    <div className="app-shell has-tabbar">
       <div className="app-frame">
         <div className="page-header">
-          <button
-            className="icon-btn"
-            onClick={() => go({ name: 'dashboard' })}
-            aria-label={t(lang, 'common.back')}
-          >
-            <Icon name="fa-arrow-left" />
-          </button>
           <h2 className="step-title">{t(lang, 'goal.list.title')}</h2>
           <button
             className="text-btn"

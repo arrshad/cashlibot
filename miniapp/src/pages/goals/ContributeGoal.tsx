@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Icon } from '@/components/Icon';
+import { Sheet } from '@/components/Sheet';
 import { formatMoney } from '@/format';
 import { t } from '@/i18n';
 import { useAppStore } from '@/store/app';
@@ -27,20 +27,12 @@ export function ContributeGoal({ goalId }: Props) {
 
   if (!goal) {
     return (
-      <div className="app-shell">
-        <div className="app-frame">
-          <div className="glass-card" style={{ padding: 22 }}>
-            <p className="error-text">{t(lang, 'goal.contribute_missing')}</p>
-            <button
-              className="btn btn-ghost"
-              onClick={() => go({ name: 'goals' })}
-              style={{ marginTop: 8 }}
-            >
-              {t(lang, 'common.back')}
-            </button>
-          </div>
-        </div>
-      </div>
+      <Sheet
+        title={t(lang, 'goal.contribute_title')}
+        onClose={() => go({ name: 'goals' })}
+      >
+        <p className="error-text">{t(lang, 'goal.contribute_missing')}</p>
+      </Sheet>
     );
   }
 
@@ -67,81 +59,57 @@ export function ContributeGoal({ goalId }: Props) {
 
   if (justCompleted) {
     return (
-      <div className="app-shell">
-        <div className="app-frame">
-          <div className="glass-card" style={{ padding: 28, textAlign: 'center' }}>
-            <h2 className="hero-title">{t(lang, 'goal.completed_title')}</h2>
-            <p style={{ color: 'var(--text-secondary)', marginTop: 12 }}>
-              {t(lang, 'goal.completed_body', { name: goal.name })}
-            </p>
-            <button
-              className="btn btn-primary"
-              style={{ marginTop: 20 }}
-              onClick={() => go({ name: 'goals' })}
-            >
-              {t(lang, 'common.done')}
-            </button>
-          </div>
-        </div>
-      </div>
+      <Sheet
+        title={t(lang, 'goal.completed_title')}
+        onClose={() => go({ name: 'goals' })}
+      >
+        <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>
+          {t(lang, 'goal.completed_body', { name: goal.name })}
+        </p>
+        <button
+          className="btn btn-primary"
+          onClick={() => go({ name: 'goals' })}
+        >
+          {t(lang, 'common.done')}
+        </button>
+      </Sheet>
     );
   }
 
   return (
-    <div className="app-shell">
-      <div className="app-frame">
-        <div className="glass-card" style={{ padding: 22 }}>
-          <div className="step">
-            <div className="page-header">
-              <button
-                className="icon-btn"
-                onClick={() => go({ name: 'goals' })}
-                aria-label={t(lang, 'common.back')}
-              >
-                <Icon name="fa-arrow-left" />
-              </button>
-              <h2 className="step-title">{t(lang, 'goal.contribute_title')}</h2>
-            </div>
+    <Sheet
+      title={t(lang, 'goal.contribute_title')}
+      onClose={() => go({ name: 'goals' })}
+      footer={
+        <button
+          className="btn btn-primary"
+          disabled={!canSubmit}
+          onClick={submit}
+        >
+          {t(lang, 'goal.contribute_submit')}
+        </button>
+      }
+    >
+      <p className="hint-text">
+        {goal.name} · {formatMoney(goal.current_amount, currency)} /{' '}
+        {formatMoney(goal.target_amount, currency)}
+      </p>
 
-            <p className="hint-text" style={{ marginBottom: 8 }}>
-              {goal.name} · {formatMoney(goal.current_amount, currency)} /{' '}
-              {formatMoney(goal.target_amount, currency)}
-            </p>
-
-            <div className="field">
-              <span className="field-label">
-                {t(lang, 'goal.contribute_amount_label')}
-              </span>
-              <input
-                className="input input-amount"
-                inputMode="decimal"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value.replace(',', '.'))}
-                placeholder="0"
-                autoFocus
-              />
-            </div>
-
-            {error && <span className="error-text">{error}</span>}
-
-            <div className="step-footer">
-              <button
-                className="btn btn-ghost"
-                onClick={() => go({ name: 'goals' })}
-              >
-                {t(lang, 'common.back')}
-              </button>
-              <button
-                className="btn btn-primary"
-                disabled={!canSubmit}
-                onClick={submit}
-              >
-                {t(lang, 'goal.contribute_submit')}
-              </button>
-            </div>
-          </div>
-        </div>
+      <div className="field">
+        <span className="field-label">
+          {t(lang, 'goal.contribute_amount_label')}
+        </span>
+        <input
+          className="input input-amount"
+          inputMode="decimal"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value.replace(',', '.'))}
+          placeholder="0"
+          autoFocus
+        />
       </div>
-    </div>
+
+      {error && <span className="error-text">{error}</span>}
+    </Sheet>
   );
 }
