@@ -7,6 +7,21 @@ confirm. See balances, budgets, goals, and weekly reports in the Mini App.
 Split expenses with friends, hit XP levels for consistency, and top up
 credits for AI features with Telegram Stars.
 
+## Screenshots
+
+<table>
+<tr>
+<td><img src="docs/screenshots/dashboard.png" width="260" alt="Dashboard: accounts and recent activity"></td>
+<td><img src="docs/screenshots/new-transaction.png" width="260" alt="Quick-add: new transaction sheet"></td>
+<td><img src="docs/screenshots/budgets.png" width="260" alt="Budgets: per-category limits with progress"></td>
+</tr>
+<tr>
+<td><img src="docs/screenshots/goals.png" width="260" alt="Savings goals with progress and deadlines"></td>
+<td><img src="docs/screenshots/reports.png" width="260" alt="Reports: behavior score and spend by category"></td>
+<td><img src="docs/screenshots/stats.png" width="260" alt="Stats: level, streaks, and badges"></td>
+</tr>
+</table>
+
 ## Stack at a glance
 
 | Layer | Tech |
